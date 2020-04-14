@@ -35,10 +35,10 @@ public class Lista_tareas extends AppCompatActivity {
 
     ImageView volverAmigos3;
     ListView idFechasTitulo;
-
+    String fecha,titulo,descrip,hora,nombre;
     TextView textoFechas;
     ArrayList<String> listFechasTitulo= new ArrayList<>();
-    int idUsuario,idUsuario2;
+    int idUsuario,idUsuario2, idComp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,7 @@ public class Lista_tareas extends AppCompatActivity {
 
         idUsuario2= getIntent().getIntExtra("idUsuario2",0);
 
-        UrlFechas("");
+        UrlFechas("http://192.168.1.131/ProyectoNuevo/AgendaCompartida/fechasTitulo.php");
 
     }
     public void UrlFechas(String URL){
@@ -89,9 +89,10 @@ public class Lista_tareas extends AppCompatActivity {
                             for (int i = 0; i <jsonArray.length() ; i++) {
                                 cont++;
                                 JSONObject object = jsonArray.getJSONObject(i);
-                                String finalstring = cont+". TITULO:"+object.getString("titulo")+"-> "+object.getString("fecha")+" COMPARTIDO: "+object.getString("nombre");
+                                String finalstring = cont+"."+object.getString("titulo")+" -> "+object.getString("fecha");
                                 listFechasTitulo.add(finalstring);
                             }
+
                             final ArrayAdapter<String> adapter = new ArrayAdapter<String>(Lista_tareas.this, android.R.layout.simple_spinner_item, listFechasTitulo);
                             idFechasTitulo.setAdapter(adapter);
                             idFechasTitulo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -99,10 +100,23 @@ public class Lista_tareas extends AppCompatActivity {
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     try{
                                         idUsuario2 = Integer.parseInt(jsonArray.getJSONObject(position).getString("idUsuario"));
-                                        Toast.makeText(Lista_tareas.this, "Pulsado: "+idUsuario2, Toast.LENGTH_SHORT).show();
+                                        idComp = Integer.parseInt(jsonArray.getJSONObject(position).getString("idComp"));
+                                        fecha = jsonArray.getJSONObject(position).getString("fecha");
+                                        titulo = jsonArray.getJSONObject(position).getString("titulo");
+                                        descrip = jsonArray.getJSONObject(position).getString("descrip");
+                                        hora = jsonArray.getJSONObject(position).getString("hora");
+                                        nombre = jsonArray.getJSONObject(position).getString("nombre");
+
+                                        Toast.makeText(Lista_tareas.this, "idComp: "+idComp, Toast.LENGTH_SHORT).show();
 
                                         Intent intent = new Intent(Lista_tareas.this, TareaCompartida.class);
                                         intent.putExtra("idUsuario2",idUsuario2);
+                                        intent.putExtra("idComp",idComp);
+                                        intent.putExtra("fecha",fecha);
+                                        intent.putExtra("titulo",titulo);
+                                        intent.putExtra("descrip",descrip);
+                                        intent.putExtra("hora",hora);
+                                        intent.putExtra("nombre",nombre);
                                         startActivity(intent);
 
                                     }catch (JSONException e) {
@@ -154,4 +168,17 @@ public class Lista_tareas extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest2);
     }
+    public void InsertarTarea(View view){
+        Intent intent = new Intent(Lista_tareas.this, Insertar_Tarea_Compartida.class);
+        intent.putExtra("idUsuario2",idUsuario2);
+        startActivity(intent);
+
+    }
+    public void VerTareas(View view){
+        Intent intent = new Intent(Lista_tareas.this, TareaCompartida.class);
+        intent.putExtra("idComp",idComp);
+        startActivity(intent);
+
+    }
+
 }

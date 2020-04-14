@@ -236,7 +236,6 @@ public class Mi_tarea extends AppCompatActivity implements View.OnClickListener 
                 // ingresados existen y que el servicio php nos está devolviendo la fila encontrada
                 if (!response.isEmpty()){
 
-                    Toast.makeText(Mi_tarea.this, "Hola si que entro", Toast.LENGTH_SHORT).show();
 
                     try {
                         JSONObject jsonObject = new JSONObject(response);

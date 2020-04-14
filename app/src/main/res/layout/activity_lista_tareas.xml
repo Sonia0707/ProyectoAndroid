@@ -87,6 +87,7 @@
             android:background="@drawable/mas"
             android:clickable="true"
 
+            android:onClick="InsertarTarea"
             app:backgroundTint="#009688"
             app:srcCompat="@drawable/mas" />
 
