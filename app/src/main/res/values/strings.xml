@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ProyectoFinal</string>
+    <string name="formato_fecha">dd/mm/yyyy</string>
+    <string name="formato_hora">hh:mm</string>
+    <string name="grvity">center</string>
+    <string name="title_activity_pruebaa_proyec">PruebaaProyec</string>
+</resources>

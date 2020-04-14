@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.proyectofinal">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".agendaPersonal.agendaCompartida.Insertar_Tarea_Compartida" />
+        <activity android:name=".agendaPersonal.agendaCompartida.TareaCompartida" />
+        <activity android:name=".agendaPersonal.agendaCompartida.Lista_tareas" />
+        <activity android:name=".agendaPersonal.agendaCompartida.VerPetiones" />
+        <activity android:name=".agendaPersonal.agendaCompartida.PeticionAmigos" />
+        <activity android:name=".agendaPersonal.agendaCompartida.ListaAmigosTareas" />
+        <activity android:name=".agendaPersonal.Insertar_Tarea" />
+        <activity android:name=".agendaPersonal.Mi_tarea" />
+        <activity android:name=".agendaPersonal.TareasPersonales" />
+        <activity android:name=".agendaPersonal.Registro" />
+        <activity android:name=".agendaPersonal.Administrador" />
+        <activity android:name=".agendaPersonal.Usuario" />
+        <activity android:name=".agendaPersonal.OlvidoPassword" />
+        <activity android:name=".agendaPersonal.Login_Main">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
