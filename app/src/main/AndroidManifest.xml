@@ -10,6 +10,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".agendaPersonal.agendaGrupal.VerUsuariosGrupal"></activity>
+        <activity android:name=".agendaPersonal.agendaGrupal.InsertarTareaGrupal" />
+        <activity android:name=".agendaPersonal.agendaGrupal.TareaGrupal" />
+        <activity android:name=".agendaPersonal.agendaGrupal.Lista_Tareas_Grupal" />
+        <activity android:name=".agendaPersonal.agendaGrupal.NuevoGrupo" />
+        <activity android:name=".agendaPersonal.agendaGrupal.Lista_Grupos" />
+        <activity android:name=".agendaPersonal.InsertarUsuarios" />
+        <activity android:name=".agendaPersonal.Configuracion" />
         <activity android:name=".agendaPersonal.agendaCompartida.Insertar_Tarea_Compartida" />
         <activity android:name=".agendaPersonal.agendaCompartida.TareaCompartida" />
         <activity android:name=".agendaPersonal.agendaCompartida.Lista_tareas" />

@@ -67,7 +67,7 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/imageView5"
+                    android:id="@+id/btnPersonalAdmin"
                     android:layout_width="337dp"
                     android:layout_height="90dp"
                     android:layout_weight="0.5"
@@ -101,7 +101,7 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/imageV"
+                    android:id="@+id/btnCompartidaAdmin"
                     android:layout_width="372dp"
                     android:layout_height="90dp"
                     android:layout_weight="0.5"
@@ -134,7 +134,7 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/imageView6"
+                    android:id="@+id/btnGrupalAdmin"
                     android:layout_width="339dp"
                     android:layout_height="90dp"
                     android:layout_weight="0.5"
@@ -161,7 +161,7 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/btnCerrar"
+                android:id="@+id/btnCerrarAdmin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/btn_fondo_color"
@@ -174,24 +174,98 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ImageButton
-                    android:id="@+id/imageButton"
-                    android:layout_width="73dp"
-                    android:layout_height="66dp"
-                    android:layout_margin="20sp"
-                    android:background="@drawable/btn_fondo_color"
-                    app:srcCompat="@android:drawable/stat_notify_sdcard_prepare" />
-
-                <TextView
-                    android:id="@+id/textView2"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="40sp"
-                    android:text="Configuración"
-                    android:textColor="@android:color/background_dark"
-                    android:textColorHint="@android:color/background_dark"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/buscarAmigosAdmin"
+                        android:layout_width="55dp"
+                        android:layout_height="62dp"
+                        android:layout_marginLeft="10sp"
+                        android:layout_marginTop="20sp"
+
+                        android:layout_marginRight="10sp"
+                        android:background="@drawable/mas"
+                        android:clickable="true"
+                        android:onClick="onClick"
+                        app:backgroundTint="#009688"
+                        app:srcCompat="@drawable/mas" />
+
+                    <TextView
+                        android:id="@+id/textView8"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hacer amigos"
+                        android:textColor="@color/design_default_color_on_secondary"
+                        android:textColorHint="@color/design_default_color_on_secondary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/buscarPeticionesAdmin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10sp"
+                        android:layout_marginTop="20sp"
+                        android:layout_marginRight="10sp"
+                        android:clickable="true"
+                        android:onClick="onClick"
+                        app:backgroundTint="#009688"
+                        app:srcCompat="@android:drawable/ic_menu_view" />
+
+                    <TextView
+                        android:id="@+id/txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ver peticiones"
+                        android:textColor="@color/design_default_color_on_secondary"
+                        android:textColorHint="@color/design_default_color_on_secondary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/btnConfiguracion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10sp"
+                        android:layout_marginTop="20sp"
+                        android:layout_marginRight="10sp"
+                        android:clickable="true"
+                        app:backgroundTint="#009688"
+                        app:srcCompat="@android:drawable/stat_notify_sdcard_prepare" />
+
+
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Configuración"
+                        android:textColor="@android:color/background_dark"
+                        android:textColorHint="@android:color/background_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
             </LinearLayout>
 
         </LinearLayout>

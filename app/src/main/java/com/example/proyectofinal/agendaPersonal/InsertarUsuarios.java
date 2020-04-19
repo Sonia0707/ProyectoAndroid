@@ -1,5 +1,4 @@
 package com.example.proyectofinal.agendaPersonal;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -19,93 +18,90 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.proyectofinal.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
-
-public class Registro extends AppCompatActivity implements View.OnClickListener {
-
+public class InsertarUsuarios extends AppCompatActivity implements View.OnClickListener {
     //Crear varibles para visualizar y las que necesitemos:
-    Button btnRegristro;
-    EditText idNombre, idPassword, idPassword2, idCorreo;
-    private String nombre, pass, pass2, email;
-    ImageView volver;
-
+    Button btnInsertar;
+    EditText idNombre, idPassword, idCorreo;
+    private String nombre, pass, email;
+    ImageView volverConfi;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registro);
-
-        //Visualizamos los controles de la vista:
-
-        btnRegristro= (Button)findViewById(R.id.btnRegistro);
-        idNombre= (EditText)findViewById(R.id.idNombre);
-        idPassword= (EditText)findViewById(R.id.idPassword);
-        idPassword2= (EditText)findViewById(R.id.idPassword2);
-        idCorreo= (EditText)findViewById(R.id.email);
-        volver=(ImageView)findViewById(R.id.Vlogin);
+        setContentView(R.layout.activity_insertar_usuarios);
+        volverConfi=(ImageView)findViewById(R.id.volverConfi);
+        btnInsertar=(Button)findViewById(R.id.btnInsert);
+        idNombre=(EditText)findViewById(R.id.idNombreUsuarios);
+        idCorreo=(EditText)findViewById(R.id.idEmails);
+        idPassword=(EditText)findViewById(R.id.idContra);
 
         //Escuchar el click dependiento cual pulsemos, para ello implementamos el oyente View.OnClickListener:
-        btnRegristro.setOnClickListener(this);
-        volver.setOnClickListener(this);
+        btnInsertar.setOnClickListener(this);
+        volverConfi.setOnClickListener(this);
     }
-    //Metodo onClick dependiendo cual cliquemos:
     @Override
     public void onClick(View v) {
         //Switch para hacer la diferencia entre pulsar un boton u otro:
         switch (v.getId()){
             //Boton para guardar lo escrito en los EditText:
-            case R.id.btnRegistro:
+            case R.id.btnInsert:
                 nombre= idNombre.getText().toString();
                 pass= idPassword.getText().toString();
-                pass2= idPassword2.getText().toString();
                 email = idCorreo.getText().toString();
 
                 //Si los campos no estan vacios conectamos al PHP:
-                if (!nombre.isEmpty() && !pass.isEmpty() && !pass2.isEmpty() && !email.isEmpty()){
-                    insertarUsurario("http://192.168.1.131/ProyectoNuevo/Registro/registroAndroid.php");
+                if (!nombre.isEmpty() && !pass.isEmpty() && !email.isEmpty()){
+                    URLusuariosNuevos("http://192.168.1.131/ProyectoNuevo/Administrador/crearUsuarios.php?");
                 }else {
                     Toast.makeText(this, "No se permiten campos vacios", Toast.LENGTH_SHORT).show();
                 }
 
                 break;
-            case R.id.Vlogin:
-                //Boton para regresar al LOGIN:
-                startActivity(new Intent(this, Login_Main.class));
+            case R.id.volverConfi:
+                //Boton para regresar a cofiguracion:
+                startActivity(new Intent(this, Configuracion.class));
                 break;
-
         }
-
     }
     //Metodo que conecta con el PHP:
-    public void insertarUsurario(String URL){
+    public void URLusuariosNuevos(String URL){
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                //Leemos la respuesta que nos ofrece el PHP en Forma de XML:
+                //Leemos la respuesta que nos ofrece el PHP
                 if (!response.isEmpty()) {
-                        //Si todo es correcto nos hace el registro en la base de datos y nos lo manda al LOGIN de nuevo:
-                    if (response.equals("<return>usunuevo</return>")) {
-                        Toast.makeText(Registro.this, "Registro completado con exito", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(),Login_Main.class);
-                        startActivity(intent);
-                        finish();
-                        //Si la segunda contraseña no coincide nos lanza un mensaje en el Toast diciendo que no coinciden:
-                    } else if (response.equals("<return>usunuevo</return><return>false</return>")){
-                        Toast.makeText(Registro.this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show();
-                        //Si el usuario ya existe nos manda un mensaje en un Toast diciendo que ya existe:
-                    }else if (response.equals("<return>existe</return>")){
-                        Toast.makeText(Registro.this, "El usuario ya esta existe", Toast.LENGTH_SHORT).show();
+                    //Recogemos el JSON de PHP:
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        String respuesta= jsonObject.getString("respuesta");
+                        //Si el usuario ya existe nos lanza un toast(diciendo que ya existe) y no, nos deja insertarlo:
+                        if (respuesta.equals("1")) {
+                            Toast.makeText(InsertarUsuarios.this, "El usuario ya existe, prueba con otro.", Toast.LENGTH_SHORT).show();
+
+                        //Si es 0 la respuesta nos deja insertarlo: y nos manda a configuracion de nuevo para verificarlo:
+                        } else if (respuesta.equals("0")){
+                            Toast.makeText(InsertarUsuarios.this, "Insertado con exito.", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(),Configuracion.class);
+                            startActivity(intent);
+                            finish();
+                        //Si da un 2 fallo en la base de datos:
+                        }else if (response.equals("2")){
+                            Toast.makeText(InsertarUsuarios.this, "Error en la base de datos, intentelo mas tarde", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-
                 }
-
             }
         }, new Response.ErrorListener() {
             //Si no se puede conectar al php nos manda el mensaje en un Toast: El sitio web no esta en servicio intentelo mas tarde.
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(Registro.this,"El sitio web no esta en servicio intentelo mas tarde.", Toast.LENGTH_LONG).show();
-
+                Toast.makeText(InsertarUsuarios.this,"El sitio web no esta en servicio intentelo mas tarde.", Toast.LENGTH_LONG).show();
             }
         }){
             //Aqui le enviamos por medio de Post los parametros que necesita el PHP:
@@ -114,7 +110,6 @@ public class Registro extends AppCompatActivity implements View.OnClickListener 
                 Map<String,String> parametros = new HashMap<String, String>();
                 parametros.put("nombre",nombre);
                 parametros.put("pass",pass);
-                parametros.put("pass2",pass2);
                 parametros.put("email", email);
                 return parametros;
             }
@@ -123,6 +118,4 @@ public class Registro extends AppCompatActivity implements View.OnClickListener 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }
-
-
 }

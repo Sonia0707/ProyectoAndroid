@@ -35,13 +35,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Insertar_Tarea_Compartida extends AppCompatActivity implements View.OnClickListener {
-
+    //Crear varibles para visualizar y las que necesitemos:
     EditText idtitulo, idFecha, idHora, idDescrip;
     Button btnGuardarComp;
     ImageView atrasNuevaComp;
     String nombre, fecha, horas,descrip;
     int idUsuario,idUsuario2,idComp;
-
+    //String para los 0 y barras en las fechas:
     private static final String CERO = "0";
     private static final String BARRA = "/";
 
@@ -76,19 +76,18 @@ public class Insertar_Tarea_Compartida extends AppCompatActivity implements View
         SharedPreferences preferences = getSharedPreferences("LoginUsuario", Context.MODE_PRIVATE);
         idUsuario = preferences.getInt("idUsuario", 0);
 
+        //Recuperamos el idUsuario2 de la otra actividad al clicar en el amigo:
         idUsuario2= getIntent().getIntExtra("idUsuario2",0);
 
+        //Crear OnClick para cada objeto que sea necesario:
         btnGuardarComp.setOnClickListener(this);
         idFecha.setOnClickListener(this);
         idHora.setOnClickListener(this);
         atrasNuevaComp.setOnClickListener(this);
-
     }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-
             //Al pulsar el boton de login comprueba si los campos estan vacios
             // y si no es así manda la URL al método validar usurios de la clase Volley.
             case R.id.btnGuardarComp:
@@ -105,7 +104,7 @@ public class Insertar_Tarea_Compartida extends AppCompatActivity implements View
                 break;
 
             case R.id.fechComp:
-
+                //DatePickerDialog de la fecha Para que al usuario le sea mas facil introducirla:
                 DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -117,13 +116,13 @@ public class Insertar_Tarea_Compartida extends AppCompatActivity implements View
                         String mesFormateado = (mesActual < 10) ? CERO + String.valueOf(mesActual) : String.valueOf(mesActual);
                         //Muestro la fecha con el formato deseado
                         idFecha.setText(diaFormateado + BARRA + mesFormateado + BARRA + year);
-
                     }
                 }, anio, mes, dia);
+                //Lo lanzamos
                 datePickerDialog.show();
                 break;
             case R.id.idhhComp:
-
+                //TimePickerDialog de la hora Para que al usuario le sea mas facil introducirla:
                 TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -147,77 +146,50 @@ public class Insertar_Tarea_Compartida extends AppCompatActivity implements View
                 }, hora,minuto,false);
                 //Lo lanzamos:
                 timePickerDialog.show();
-
                 break;
-
             case R.id.atrasNuevaComp:
                 Intent intent = new Intent(Insertar_Tarea_Compartida.this, Lista_tareas.class);
                 intent.putExtra("idUsuario2",idUsuario2);
                 startActivity(intent);
                 break;
-
         }
     }
     public void insertarTareaComp(String URL){
-        //1º En la siguiente línea hacemos uso de un objeto tipo StringRequest y luego dentro del constructor de la
-        //clase colocamos como parámetros el tipo de método de envío (POST) la URL y seguidamente
-        //agregamos la clase response listener:
-
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
-
-            // 2º La cual nos generará automaticamente el listener onResponse que éste reaccionara en
-            //caso de que la petición se procese:
             @Override
             public void onResponse(String response) {
-
-                //Validamos que el response no esté vacío esto dará a entender que el idUsuario,fecha,titulo, descripcción, hora
-                // ingresados existen y que el servicio php nos está devolviendo la fila encontrada
                 if (!response.isEmpty()){
-
                     try {
+                        //Respuesta del JSON de PHP:
                         JSONObject jsonObject = new JSONObject(response);
                         int respuesta= jsonObject.getInt("respuesta");
-
-
-                        //A) El usuario existe por lo tanto Inserta todos los parametros:
+                        //Si la respuesta es uno quiere decir que la conexion ha ido bien y se ha insertado en la tabla:
                         if (respuesta == 1){
-
-
                             Toast.makeText(Insertar_Tarea_Compartida.this, "Insertado Contenido", Toast.LENGTH_SHORT).show();
-                            //Lanzamos a la activity de AgendaPersonal para ver si el contenido esta metido:
-                            /*Intent intent = new Intent(getApplicationContext(),Lista_tareas.class);
+                            //Lanzamos a la activity de Lista_Tareas para ver si el contenido esta metido:
+                            Intent intent = new Intent(getApplicationContext(),Lista_tareas.class);
+                            intent.putExtra("idUsuario2",idUsuario2);
                             startActivity(intent);
-                            finish();*/
-
+                            finish();
                             //B) La conexión con la base de datos es erronia, lanzaremos el mensaje para que le usurio sepa que hay un problema.
                         }else if (respuesta == 0){
-
                             Toast.makeText(Insertar_Tarea_Compartida.this, "Error de conexion con la base de datos, intentelo mas tarde", Toast.LENGTH_SHORT).show();
-
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
-            //3º Agregaremos la clase Response.ErrorListener() este nos generará el listener de un error response
-            //el cual reaccionará en caso de no procesarse la petición al servidor:
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
                 //Comprobacion de se la conexion es correcta entre Android y el Servidor:
                 Toast.makeText(Insertar_Tarea_Compartida.this,"El sitio web no esta en servicio intentelo mas tarde.", Toast.LENGTH_LONG).show();
             }
-
-        }){//5º Agregamos el método getParams() dentro de éste colocaremos los parámetros que nuestro servicio solicita
-            //para devolvernos una respuesta:
+        }){
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-
-                //En el primer parámetro se colocará el idUsuario que tenemos guardado del Logeo y en
-                //los demás agregaremos los datos que deseamos enviar, en este caso nuestros EditText:
+                //Pasamos los parametros modificados al PHP para que este los modifique en la tabla:
                 Map<String,String> parametros = new HashMap<String, String>();
                 parametros.put("idUsuario", String.valueOf(idUsuario));
                 parametros.put("idUsuario2", String.valueOf(idUsuario2));
@@ -225,17 +197,11 @@ public class Insertar_Tarea_Compartida extends AppCompatActivity implements View
                 parametros.put("titulo",nombre);
                 parametros.put("descrip",descrip);
                 parametros.put("hora",horas);
-
-
                 //Despues retornamos toda la colección de datos mediante la instancia creada:
                 return parametros;
             }
         };
-
-        //6º Por ulltimo hacemos uso de la clase RequestQueue creamos una instancia de ésta y en la siguiente línea agregaremos la
-        //instancia de nuestro objeto stringRequest ésta nos ayudará a procesar todas las peticiones hechas:
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
-
     }
 }

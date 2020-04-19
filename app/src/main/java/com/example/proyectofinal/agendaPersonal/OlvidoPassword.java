@@ -24,39 +24,38 @@ import java.util.Map;
 
 public class OlvidoPassword extends AppCompatActivity implements View.OnClickListener {
 
+    //Crear varibles para visualizar y las que necesitemos:
     EditText correo;
     Button btnEnviar;
     String email;
     ImageView atras;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_olvido_password);
 
+        //Visualizamos los controles de la vista:
         correo=(EditText)findViewById(R.id.email);
         btnEnviar = (Button)findViewById(R.id.btnEnviar);
         atras= (ImageView) findViewById(R.id.idvolver);
+
+        //Escuchar el click dependiento cual pulsemos, para ello implementamos el oyente View.OnClickListener:
         btnEnviar.setOnClickListener(this);
         atras.setOnClickListener(this);
     }
-
     @Override
     public void onClick(View v) {
 
         switch (v.getId()){
             case R.id.btnEnviar:
                 email= correo.getText().toString();
-
                 if (!email.isEmpty()){
                     //metodo enviar
                     enviarCorreo("http://192.168.1.131/email/index.php");
                 }else {
                     Toast.makeText(this, "No se permiten campos vacios", Toast.LENGTH_SHORT).show();
                 }
-
                 break;
-
             case R.id.idvolver:
                 Intent intent2 = new Intent(getApplicationContext(), com.example.proyectofinal.agendaPersonal.Login_Main.class);
                 startActivity(intent2);
@@ -64,6 +63,7 @@ public class OlvidoPassword extends AppCompatActivity implements View.OnClickLis
                 break;
         }
     }
+    //Metodo que conecta con el PHP:
     public void enviarCorreo(String URL){
         StringRequest stringRequest= new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
             @Override
@@ -96,5 +96,4 @@ public class OlvidoPassword extends AppCompatActivity implements View.OnClickLis
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }
-
 }

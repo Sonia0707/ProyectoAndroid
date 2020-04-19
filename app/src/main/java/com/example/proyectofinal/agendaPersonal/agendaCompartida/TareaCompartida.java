@@ -1,5 +1,4 @@
 package com.example.proyectofinal.agendaPersonal.agendaCompartida;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
@@ -34,15 +33,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-
 public class TareaCompartida extends AppCompatActivity implements View.OnClickListener {
-
+    //Crear varibles para visualizar y las que necesitemos:
     ImageView volver;
-
     String titulo,descrip,hora,fecha,nombre;
     EditText idHora,idTitulo,idDescrip,idFecha,idCompartida;
     int idComp,idUsuario2;
-
+    //String para los 0 y barras en las fechas:
     private static final String CERO = "0";
     private static final String BARRA = "/";
 
@@ -65,7 +62,6 @@ public class TareaCompartida extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tarea_compartida);
-
         idHora =(EditText) findViewById(R.id.idHoraTareaComp);
         idTitulo=(EditText) findViewById(R.id.idTituloTareaComp);
 
@@ -74,7 +70,7 @@ public class TareaCompartida extends AppCompatActivity implements View.OnClickLi
         idFecha=(EditText)findViewById(R.id.idFechaTaeaComp);
         idCompartida=(EditText)findViewById(R.id.idPersonaComp);
 
-        //Recuperar fecha de la otra Activity para poder mandarla como parametro y ver el contenido
+        //Recuperamos el contenido sacado en la Activity de Lista_Tareas y lo visualizamos en los EditText:
         idComp= getIntent().getIntExtra("idComp",0);
         idUsuario2= getIntent().getIntExtra("idUsuario2",0);
         titulo= getIntent().getStringExtra("titulo");
@@ -88,11 +84,10 @@ public class TareaCompartida extends AppCompatActivity implements View.OnClickLi
         idDescrip.setText(descrip);
         idFecha.setText(fecha);
         idCompartida.setText(nombre);
-
+        //OnClic para fecha y hora para poder ser modificados:
         idFecha.setOnClickListener(this);
         idHora.setOnClickListener(this);
     }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -138,38 +133,26 @@ public class TareaCompartida extends AppCompatActivity implements View.OnClickLi
                 }, horas,minuto,false);
                 //Lo lanzamos:
                 timePickerDialog.show();
-
                 break;
         }
     }
+    //Boton que conecta con la URL de PHP para modificar la tarea:
     public void modificarTareasComp(View view){
         UrlModificar("http://192.168.1.131/ProyectoNuevo/AgendaCompartida/modificarTareaComp.php");
     }
     public void UrlModificar(String UrlModificar){
-        //1º En la siguiente línea hacemos uso de un objeto tipo StringRequest y luego dentro del constructor de la
-        //clase colocamos como parámetros el tipo de método de envío (POST) la URL y seguidamente
-        //agregamos la clase response listener:
-
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlModificar, new Response.Listener<String>() {
-
-            // 2º La cual nos generará automaticamente el listener onResponse que éste reaccionara en
-            //caso de que la petición se procese:
             @Override
             public void onResponse(String response) {
-
-                //Validamos que el response no esté vacío esto dará a entender que el idUsuario,fecha,titulo, descripcción, hora
-                // ingresados existen y que el servicio php nos está devolviendo la fila encontrada
                 if (!response.isEmpty()){
-
+                    //Recogemos la respuesta del PHP con el JSON:
                     try {
                         JSONObject jsonObject = new JSONObject(response);
                         int respuesta= jsonObject.getInt("respuesta");
-
-                        //A) El usuario y la fecha son correctos por lo tanto Elimina todo
+                        //A) Si la respuesta es igual a 1 lanzamos Toast que la tarea a sido modificada:
                         if (respuesta == 1){
-
                             Toast.makeText(TareaCompartida.this, "La Tarea ha sido modificada", Toast.LENGTH_SHORT).show();
-                            //Lanzamos a la activity de AgendaPersonal para ver si el contenido esta borrado:
+                            //Lanzamos a la activity de ListaTareas para ver si el contenido se ha modificado:
                             Intent intent = new Intent(getApplicationContext(),Lista_tareas.class);
                             intent.putExtra("idComp",idComp);
                             intent.putExtra("idUsuario2",idUsuario2);
@@ -178,33 +161,23 @@ public class TareaCompartida extends AppCompatActivity implements View.OnClickLi
 
                             //B) La conexión con la base de datos es erronia, lanzaremos el mensaje para que le usurio sepa que hay un problema.
                         }else if (respuesta == 0){
-
                             Toast.makeText(TareaCompartida.this, "Error de conexion con la base de datos, intentelo mas tarde", Toast.LENGTH_SHORT).show();
-
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
-            //3º Agregaremos la clase Response.ErrorListener() este nos generará el listener de un error response
-            //el cual reaccionará en caso de no procesarse la petición al servidor:
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
                 //Comprobacion de se la conexion es correcta entre Android y el Servidor:
                 Toast.makeText(TareaCompartida.this,"El sitio web no esta en servicio intentelo mas tarde.", Toast.LENGTH_LONG).show();
             }
-
-        }){//5º Agregamos el método getParams() dentro de éste colocaremos los parámetros que nuestro servicio solicita
-            //para devolvernos una respuesta:
+        }){
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-
-                //En el primer parámetro se colocará el idUsuario que tenemos guardado del Logeo y en
-                //los demás agregaremos los datos que deseamos enviar, en este caso nuestros EditText:
+                //Mandamos al PHP lo modificado:
                 Map<String,String> parametros = new HashMap<String, String>();
                 parametros.put("idComp", String.valueOf(idComp));
                 parametros.put("titulo", idTitulo.getText().toString());
@@ -215,41 +188,29 @@ public class TareaCompartida extends AppCompatActivity implements View.OnClickLi
                 return parametros;
             }
         };
-
-        //6º Por ulltimo hacemos uso de la clase RequestQueue creamos una instancia de ésta y en la siguiente línea agregaremos la
-        //instancia de nuestro objeto stringRequest ésta nos ayudará a procesar todas las peticiones hechas:
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }
+    //Boton que conecta con la URL de PHP para elimnar la tarea:
     public void eliminarComp(View view){
         URLeliminar("http://192.168.1.131/ProyectoNuevo/AgendaCompartida/eliminarTareasComp.php");
     }
 
     public void URLeliminar(String Url){
-        //1º En la siguiente línea hacemos uso de un objeto tipo StringRequest y luego dentro del constructor de la
-        //clase colocamos como parámetros el tipo de método de envío (POST) la URL y seguidamente
-        //agregamos la clase response listener:
-
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Url, new Response.Listener<String>() {
-
-            // 2º La cual nos generará automaticamente el listener onResponse que éste reaccionara en
-            //caso de que la petición se procese:
             @Override
             public void onResponse(String response) {
-
-                //Validamos que el response no esté vacío esto dará a entender que el idUsuario,fecha,titulo, descripcción, hora
-                // ingresados existen y que el servicio php nos está devolviendo la fila encontrada
                 if (!response.isEmpty()){
-
                     try {
+                        //Recogemos la respuesta del PHP con el JSON:
                         JSONObject jsonObject = new JSONObject(response);
                         int respuesta= jsonObject.getInt("respuesta");
 
-                        //A) El usuario y la fecha son correctos por lo tanto Elimina todo
+                        //A) Si la respuesta es uno elimanamos la tarea: y lanzamos el Toast indicandolo
                         if (respuesta == 1){
-
                             Toast.makeText(TareaCompartida.this, "Tarea eliminada", Toast.LENGTH_SHORT).show();
-                            //Lanzamos a la activity de AgendaPersonal para ver si el contenido esta borrado:
+
+                            //Lanzamos a la activity de ListaTareas para ver si el contenido esta borrado:
                             Intent intent = new Intent(getApplicationContext(),Lista_tareas.class);
                             intent.putExtra("idComp",idComp);
                             intent.putExtra("idUsuario2",idUsuario2);
@@ -258,44 +219,36 @@ public class TareaCompartida extends AppCompatActivity implements View.OnClickLi
 
                             //B) La conexión con la base de datos es erronia, lanzaremos el mensaje para que le usurio sepa que hay un problema.
                         }else if (respuesta == 0){
-
                             Toast.makeText(TareaCompartida.this, "Error de conexion con la base de datos, intentelo mas tarde", Toast.LENGTH_SHORT).show();
-
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
-            //3º Agregaremos la clase Response.ErrorListener() este nos generará el listener de un error response
-            //el cual reaccionará en caso de no procesarse la petición al servidor:
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
                 //Comprobacion de se la conexion es correcta entre Android y el Servidor:
                 Toast.makeText(TareaCompartida.this,"El sitio web no esta en servicio intentelo mas tarde.", Toast.LENGTH_LONG).show();
             }
-
-        }){//5º Agregamos el método getParams() dentro de éste colocaremos los parámetros que nuestro servicio solicita
-            //para devolvernos una respuesta:
+        }){
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-
-                //En el primer parámetro se colocará el idUsuario que tenemos guardado del Logeo y en
-                //los demás agregaremos los datos que deseamos enviar, en este caso nuestros EditText:
+                //Mandamos el idComp al PHP para que elimine esa tarea en concreto:
                 Map<String,String> parametros = new HashMap<String, String>();
                 parametros.put("idComp", String.valueOf(idComp));
                 //Despues retornamos toda la colección de datos mediante la instancia creada:
                 return parametros;
             }
         };
-
-        //6º Por ulltimo hacemos uso de la clase RequestQueue creamos una instancia de ésta y en la siguiente línea agregaremos la
-        //instancia de nuestro objeto stringRequest ésta nos ayudará a procesar todas las peticiones hechas:
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
-
+    }
+    //Volvemos atras:
+    public void Vlistatareas(View view){
+        Intent intent = new Intent(TareaCompartida.this, Lista_tareas.class);
+        intent.putExtra("idUsuario2",idUsuario2);
+        startActivity(intent);
     }
 }

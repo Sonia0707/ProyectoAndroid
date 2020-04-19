@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#d8ecea"
-    tools:context=".agendaPersonal.agendaCompartida.ListaAmigosTareas">
-
+    tools:context=".agendaPersonal.agendaGrupal.Lista_Tareas_Grupal">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,12 +22,11 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/volverPrincipal"
+                android:id="@+id/volver_lista_Grupal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="VolverPrincipal"
+                android:onClick="volverG"
                 app:srcCompat="@drawable/flecha" />
-
 
         </LinearLayout>
 
@@ -45,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                android:text="Lista de Amigos"
+                android:text="Tareas Grupales"
                 android:textColor="#FFFFFF"
                 android:textSize="25sp" />
         </LinearLayout>
@@ -55,41 +53,55 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="100"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/nofechas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginRight="10sp"
-                android:layout_weight="1"
-                android:orientation="horizontal"/>
-
-            <TextView
-                android:id="@+id/noAmigos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="40sp"
-                android:textColor="@color/design_default_color_on_secondary"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
+            />
 
         <ListView
-            android:id="@+id/idAmigos"
+            android:id="@+id/idTareasGrupales"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_margin="40sp"
-            android:foregroundGravity="center_vertical|center_horizontal"
-            android:textFilterEnabled="false" />
+            />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:gravity="right"
+        android:orientation="horizontal"
+        >
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/verUsuariosGrupo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10sp"
+            android:layout_marginTop="20sp"
+            android:layout_marginRight="10sp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:onClick="verUsuarioas"
+            app:backgroundTint="#009688"
+            app:srcCompat="@android:drawable/ic_menu_view" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/insertTarea"
+            android:layout_width="55dp"
+            android:layout_height="62dp"
+            android:layout_margin="20dp"
+            android:background="@drawable/mas"
+            android:clickable="true"
+            android:onClick="insertarTareaGrupal"
+            app:backgroundTint="#009688"
+            app:srcCompat="@drawable/mas" />
+
+
+
+    </LinearLayout>
 </LinearLayout>

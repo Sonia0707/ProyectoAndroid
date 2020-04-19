@@ -1,4 +1,5 @@
-package com.example.proyectofinal.agendaPersonal;
+package com.example.proyectofinal.agendaPersonal.agendaGrupal;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
@@ -23,6 +24,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.proyectofinal.R;
+import com.example.proyectofinal.agendaPersonal.agendaCompartida.Insertar_Tarea_Compartida;
+import com.example.proyectofinal.agendaPersonal.agendaCompartida.Lista_tareas;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,13 +33,15 @@ import org.json.JSONObject;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-public class Insertar_Tarea extends AppCompatActivity implements View.OnClickListener {
+
+public class InsertarTareaGrupal extends AppCompatActivity implements View.OnClickListener {
+
     //Crear varibles para visualizar y las que necesitemos:
-    EditText idtitulo, idFecha, idHora, idDescrip;
-    Button btnGuardar;
-    ImageView atrasNueva;
+    EditText idtituloG, idFechaG, idHoraG, idDescripG;
+    Button btnGuardarGrupal;
+    ImageView atrasNuevaGrupal;
     String nombre, fecha, horas,descrip;
-    int idUsuario;
+    int idUsuario,idGrupal;
     //String para los 0 y barras en las fechas:
     private static final String CERO = "0";
     private static final String BARRA = "/";
@@ -59,47 +64,50 @@ public class Insertar_Tarea extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_insertar__tarea);
+        setContentView(R.layout.activity_insertar_tarea_grupal);
 
-        idtitulo = (EditText) findViewById(R.id.idTitulo);
-        idFecha = (EditText) findViewById(R.id.fech);
-        idHora = (EditText) findViewById(R.id.idhh);
-        idDescrip = (EditText) findViewById(R.id.idDesc);
-        btnGuardar = (Button) findViewById(R.id.btnGuardar);
-        atrasNueva = (ImageView) findViewById(R.id.atrasNueva);
+        idtituloG = (EditText) findViewById(R.id.idTituloG);
+        idFechaG = (EditText) findViewById(R.id.fechGrupal);
+        idHoraG = (EditText) findViewById(R.id.idhhGrupal);
+        idDescripG = (EditText) findViewById(R.id.idDescGrupal);
+        btnGuardarGrupal = (Button) findViewById(R.id.btnGuardarGrupal);
+        atrasNuevaGrupal = (ImageView) findViewById(R.id.atrasGruapal);
 
         //Sharpreferens idUsuario:
         SharedPreferences preferences = getSharedPreferences("LoginUsuario", Context.MODE_PRIVATE);
         idUsuario = preferences.getInt("idUsuario", 0);
 
+        //Recoger idGrupal y Nombre para consultas y mostrarlo:
+        idGrupal= getIntent().getIntExtra("idGrupal",0);
+
+
         //Crear OnClick para cada objeto que sea necesario:
-        btnGuardar.setOnClickListener(this);
-        idFecha.setOnClickListener(this);
-        idHora.setOnClickListener(this);
-        atrasNueva.setOnClickListener(this);
+        btnGuardarGrupal.setOnClickListener(this);
+        idFechaG.setOnClickListener(this);
+        idHoraG.setOnClickListener(this);
+        atrasNuevaGrupal.setOnClickListener(this);
 
     }
-    //Metodo onClick dependiendo cual cliquemos:
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-
-            //Al pulsar el boton se comprueba si los campos estan vacios
-            // y si no es así manda la URL al método insertarTarea de la clase Volley.
-            case R.id.btnGuardar:
-                nombre = idtitulo.getText().toString();
-                fecha = idFecha.getText().toString();
-                horas = idHora.getText().toString();
-                descrip = idDescrip.getText().toString();
+            //Al pulsar el boton de login comprueba si los campos estan vacios
+            // y si no es así manda la URL al método validar usurios de la clase Volley.
+            case R.id.btnGuardarGrupal:
+                nombre = idtituloG.getText().toString();
+                fecha = idFechaG.getText().toString();
+                horas = idHoraG.getText().toString();
+                descrip = idDescripG.getText().toString();
 
                 if (!nombre.isEmpty() && !fecha.isEmpty() && !horas.isEmpty() && !descrip.isEmpty()) {
-                     insertarTarea("http://192.168.1.131/ProyectoNuevo/AgendaPersonal/insertarTarea.php");
+                    insertarTareaG("http://192.168.1.131/ProyectoNuevo/AgendaGrupal/insertarTareaGrupal.php");
                 } else {
                     Toast.makeText(this, "No se permiten campos vacios", Toast.LENGTH_SHORT).show();
                 }
                 break;
 
-            case R.id.fech:
+            case R.id.fechGrupal:
                 //DatePickerDialog de la fecha Para que al usuario le sea mas facil introducirla:
                 DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
                     @Override
@@ -111,13 +119,13 @@ public class Insertar_Tarea extends AppCompatActivity implements View.OnClickLis
                         //Formateo el mes obtenido: antepone el 0 si son menores de 10
                         String mesFormateado = (mesActual < 10) ? CERO + String.valueOf(mesActual) : String.valueOf(mesActual);
                         //Muestro la fecha con el formato deseado
-                        idFecha.setText(diaFormateado + BARRA + mesFormateado + BARRA + year);
-
+                        idFechaG.setText(diaFormateado + BARRA + mesFormateado + BARRA + year);
                     }
                 }, anio, mes, dia);
+                //Lo lanzamos
                 datePickerDialog.show();
                 break;
-            case R.id.idhh:
+            case R.id.idhhGrupal:
                 //TimePickerDialog de la hora Para que al usuario le sea mas facil introducirla:
                 TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
@@ -134,7 +142,7 @@ public class Insertar_Tarea extends AppCompatActivity implements View.OnClickLis
                             AM_PM = "p.m.";
                         }
                         //Muestro la hora con el formato deseado
-                        idHora.setText(horaFormateada + DOS_PUNTOS + minutoFormateado + " " + AM_PM);
+                        idHoraG.setText(horaFormateada + DOS_PUNTOS + minutoFormateado + " " + AM_PM);
                     }
                     //Estos valores deben ir en ese orden
                     //Al colocar en false se muestra en formato 12 horas y true en formato 24 horas
@@ -143,87 +151,60 @@ public class Insertar_Tarea extends AppCompatActivity implements View.OnClickLis
                 //Lo lanzamos:
                 timePickerDialog.show();
                 break;
-                //Volver a Tareas Personales:
-            case R.id.atrasNueva:
-                Intent intent = new Intent(getApplicationContext(), TareasPersonales.class);
+            case R.id.atrasGruapal:
+                Intent intent = new Intent(InsertarTareaGrupal.this, Lista_Tareas_Grupal.class);
+                intent.putExtra("idGrupal",idGrupal);
                 startActivity(intent);
-                finish();
                 break;
         }
     }
-
-    //Metodo que conecta con el PHP
-    public void insertarTarea(String URL){
-
-        //1º En la siguiente línea hacemos uso de un objeto tipo StringRequest y luego dentro del constructor de la
-        //clase colocamos como parámetros el tipo de método de envío (POST) la URL y seguidamente
-        //agregamos la clase response listener:
-
+    public void insertarTareaG(String URL){
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
-
-            // 2º La cual nos generará automaticamente el listener onResponse que éste reaccionara en
-            //caso de que la petición se procese:
             @Override
             public void onResponse(String response) {
-                //Validamos que el response si no falla nos da a entender que la conexión es buena:
                 if (!response.isEmpty()){
-                    //Recogemos el JSON de PHP:
                     try {
+                        //Respuesta del JSON de PHP:
                         JSONObject jsonObject = new JSONObject(response);
                         int respuesta= jsonObject.getInt("respuesta");
-
-                        //A) Si la respuesta es 1 es que nuestra tarea se ha insertado correctamente:
+                        //Si la respuesta es uno quiere decir que la conexion ha ido bien y se ha insertado en la tabla:
                         if (respuesta == 1){
-
-                            //Lanzamos a la activity de Tareas Personales para ver si el contenido esta metido:
-                            Intent intent = new Intent(getApplicationContext(),TareasPersonales.class);
+                            Toast.makeText(InsertarTareaGrupal.this, "Insertado Contenido", Toast.LENGTH_SHORT).show();
+                            //Lanzamos a la activity de Lista_Tareas para ver si el contenido esta metido:
+                            Intent intent = new Intent(getApplicationContext(),Lista_Tareas_Grupal.class);
+                            intent.putExtra("idGrupal",idGrupal);
                             startActivity(intent);
                             finish();
-
                             //B) La conexión con la base de datos es erronia, lanzaremos el mensaje para que le usurio sepa que hay un problema.
                         }else if (respuesta == 0){
-
-                            Toast.makeText(Insertar_Tarea.this, "Error de conexion con la base de datos, intentelo mas tarde", Toast.LENGTH_SHORT).show();
-
+                            Toast.makeText(InsertarTareaGrupal.this, "Error de conexion con la base de datos, intentelo mas tarde", Toast.LENGTH_SHORT).show();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 }
             }
-            //3º Agregaremos la clase Response.ErrorListener() este nos generará el listener de un error response
-            //el cual reaccionará en caso de no procesarse la petición al servidor:
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
                 //Comprobacion de se la conexion es correcta entre Android y el Servidor:
-                Toast.makeText(Insertar_Tarea.this,"El sitio web no esta en servicio intentelo mas tarde.", Toast.LENGTH_LONG).show();
+                Toast.makeText(InsertarTareaGrupal.this,"El sitio web no esta en servicio intentelo mas tarde.", Toast.LENGTH_LONG).show();
             }
-
-        }){//5º Agregamos el método getParams() dentro de éste colocaremos los parámetros que nuestro servicio solicita
-            //para devolvernos una respuesta:
+        }){
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-
-                //En el primer parámetro se colocará el idUsuario que tenemos guardado del Logeo y en
-                //los demás agregaremos los datos que deseamos enviar, en este caso nuestros EditText:
+                //Pasamos los parametros modificados al PHP para que este los modifique en la tabla:
                 Map<String,String> parametros = new HashMap<String, String>();
+                parametros.put("idGrupal", String.valueOf(idGrupal));
                 parametros.put("idUsuario", String.valueOf(idUsuario));
                 parametros.put("fecha",fecha);
                 parametros.put("titulo",nombre);
                 parametros.put("descrip",descrip);
                 parametros.put("hora",horas);
-
-
                 //Despues retornamos toda la colección de datos mediante la instancia creada:
                 return parametros;
             }
         };
-
-        //6º Por ulltimo hacemos uso de la clase RequestQueue creamos una instancia de ésta y en la siguiente línea agregaremos la
-        //instancia de nuestro objeto stringRequest ésta nos ayudará a procesar todas las peticiones hechas:
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }

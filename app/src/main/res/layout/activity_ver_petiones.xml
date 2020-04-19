@@ -25,6 +25,7 @@
                 android:id="@+id/volverAmigos3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="atrasVerPerticiones"
                 app:srcCompat="@drawable/flecha" />
 
         </LinearLayout>
@@ -77,7 +78,7 @@
             android:layout_marginTop="15sp"
             android:layout_marginRight="15sp"
             android:padding="10sp"
-            android:text="Manten pulsada la peticion para aceptarla o rechazarla:"
+            android:text=" Pulsa la peticion para aceptarla o rechazarla:"
             android:textColor="@color/design_default_color_on_secondary"
             android:textColorHint="@color/design_default_color_on_secondary"
             android:textSize="15sp"

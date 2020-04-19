@@ -33,6 +33,8 @@ public class Login_Main extends AppCompatActivity implements View.OnClickListene
     EditText idUsername, idPassword;
     TextView linkRegistro, linkContraseña;
     String usuario, pass;
+    boolean sw = false;
+    int idUsuario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +56,14 @@ public class Login_Main extends AppCompatActivity implements View.OnClickListene
 
         //Recuperamos el nombre y la contrseña del usuario para que le aparezca en el login
         //ya una vez se haya logueado y le sea mas facil:
-        recuperarUsuAndPassUsuario();
 
+            recuperarUsuAndPassUsuario();
     }
-
     @Override
+    //Metodo onClick dependiendo cual cliquemos:
     public void onClick(View v) {
         switch (v.getId()){
+            //Boton para mandar la información al PHP:
             case R.id.btnLogin:
                 usuario=idUsername.getText().toString();
                 pass=idPassword.getText().toString();
@@ -96,20 +99,21 @@ public class Login_Main extends AppCompatActivity implements View.OnClickListene
                 // 3º Validamos que el response no esté vacío esto dará a entender que el usuario y password
                 // ingresados existen y que el servicio php nos está devolviendo la fila encontrada
                 if (!response.isEmpty()){
-
                     try {
+                        //Recogemos el JSON de PHP:
                         JSONObject jsonObject = new JSONObject(response);
                         String respuesta= jsonObject.getString("respuesta");
                         int idUsuario= jsonObject.getInt("idUsuario");
-
 
                         //4ºHacemos una serie de restricciones de logueo:
 
                         //A) El usuario existe por lo tanto si su rol es 1 es administrador:
                         if (respuesta.equals("1")){
+                            sw = true;
 
+                            guadarRol(respuesta);
                             //Guardamos datos para manejo de ellos en el futuro:
-                            guardarUsuarioAndPasswordAdmin(idUsuario);
+                            guardarUsuarioAndPasswordUsuario(idUsuario);
 
                             //Lanzamos a la activity de administrador:
                             Intent intent = new Intent(getApplicationContext(),Administrador.class);
@@ -118,10 +122,12 @@ public class Login_Main extends AppCompatActivity implements View.OnClickListene
 
                             //B) El usuario existe por lo tanto si su rol es 2 es usuario normal:
                         }else if (respuesta.equals("2")){
+                            sw = false;
+
+                            guadarRol(respuesta);
                             //Guardamos datos para manejo de ellos en el futuro:
                             guardarUsuarioAndPasswordUsuario(idUsuario);
 
-                            Toast.makeText(Login_Main.this, "Existe usuario su rol es 2", Toast.LENGTH_SHORT).show();
 
                             //Lanzamos a la activity de usuario:
                             Intent intent = new Intent(getApplicationContext(), Usuario.class);
@@ -136,21 +142,16 @@ public class Login_Main extends AppCompatActivity implements View.OnClickListene
                         }else if (respuesta.equals("noUsuario")){
                             Toast.makeText(Login_Main.this, "El usuario no existe.", Toast.LENGTH_SHORT).show();
                         }
-
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 }
-
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(Login_Main.this,"Entra por aqui."+ error.toString(), Toast.LENGTH_LONG).show();
             }
-
         }){
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
@@ -160,8 +161,6 @@ public class Login_Main extends AppCompatActivity implements View.OnClickListene
                 return parametros;
             }
         };
-
-
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }
@@ -172,23 +171,26 @@ public class Login_Main extends AppCompatActivity implements View.OnClickListene
         editor.putInt("idUsuario",idUsuario);
         editor.putString("usuario",usuario);
         editor.putString("password",pass);
-        editor.putBoolean("sesion",true);
+        editor.putBoolean("sw",sw);
         editor.commit();
     }
     //Guardemos datos de admistrador para futuras cosas:
-    private  void guardarUsuarioAndPasswordAdmin(int idUsuario){
-        SharedPreferences preferences = getSharedPreferences("LoginAdmin", Context.MODE_PRIVATE);
+    private  void guadarRol(String respuesta){
+        SharedPreferences preferences = getSharedPreferences("idRoles", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("idUsuario",idUsuario);
-        editor.putString("usuario",usuario);
-        editor.putString("password",pass);
-        editor.putBoolean("sesion2",true);
+        editor.putString("idRoles",respuesta);
         editor.commit();
     }
     //Aparecerá en el Login => nombre y contraseña que hayamos metido en el ultimo momento:
     private void recuperarUsuAndPassUsuario(){
         SharedPreferences preferences = getSharedPreferences("LoginUsuario", Context.MODE_PRIVATE);
-        idUsername.setText(preferences.getString("usuario","Usuario1"));
-        idPassword.setText(preferences.getString("password","0000"));
+        boolean sw = preferences.getBoolean("sw",false);
+        if (sw){
+            idUsuario = preferences.getInt("idUsuario", 0);
+        }else {
+            idUsername.setText(preferences.getString("usuario","Usuario1"));
+            idPassword.setText(preferences.getString("password","0000"));
+
+        }
     }
 }

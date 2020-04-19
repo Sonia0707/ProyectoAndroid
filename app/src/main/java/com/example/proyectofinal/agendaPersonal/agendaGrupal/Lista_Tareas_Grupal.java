@@ -1,15 +1,12 @@
-package com.example.proyectofinal.agendaPersonal;
+package com.example.proyectofinal.agendaPersonal.agendaGrupal;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +19,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.proyectofinal.R;
+import com.example.proyectofinal.agendaPersonal.Mi_tarea;
+import com.example.proyectofinal.agendaPersonal.TareasPersonales;
+import com.example.proyectofinal.agendaPersonal.agendaCompartida.Lista_tareas;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,37 +31,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TareasPersonales extends AppCompatActivity {
+public class Lista_Tareas_Grupal extends AppCompatActivity {
 
-    //Crear varibles para visualizar y las que necesitemos:
-    ImageView SubVolver;
-    ListView lista2;
-    TextView noContenido2;
-    String titulo,descrip,hora,fecha,idRoles;
-    int idPersonal,idUsuario;
+    ListView listViewFechasGrupales;
+    TextView nofechas;
+    String titulo,descrip,hora,fechaGrupo,nombre;
+    int idGrupal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tareas_personales);
+        setContentView(R.layout.activity_lista__tareas__grupal);
+        listViewFechasGrupales= (ListView)findViewById(R.id.idTareasGrupales);
+        nofechas= (TextView) findViewById(R.id.nofechas);
 
-        lista2= (ListView)findViewById(R.id.idTareasPersonales);
-        noContenido2= (TextView) findViewById(R.id.noContenido2);
-        SubVolver= (ImageView) findViewById(R.id.SubVolver);
-
-        //Sharpreferens idUsuario:
-        SharedPreferences preferences = getSharedPreferences("LoginUsuario", Context.MODE_PRIVATE);
-        idUsuario = preferences.getInt("idUsuario",0);
-
-        //Recogemos el rol del Login para comprobar si es usuario o administrador y dependiendo de eso se manda a una actiivity u otra:
-        SharedPreferences preferences2 = getSharedPreferences("idRoles", Context.MODE_PRIVATE);
-        idRoles=preferences2.getString("idRoles","");
+        //Recoger idGrupal y Nombre para consultas y mostrarlo:
+        idGrupal= getIntent().getIntExtra("idGrupal",0);
 
         //De primeras que conete con la URL de nuestro servidor PHP
-        UrlTareas("http://192.168.1.131/ProyectoNuevo/AgendaPersonal/fechasContenido.php");
-
+        UrlTareasGrupales("http://192.168.1.131/ProyectoNuevo/AgendaGrupal/listaTareasGrupal.php");
     }
-    public void UrlTareas(String URL){
+    public void UrlTareasGrupales(String URL){
 
         //1º En la siguiente línea hacemos uso de un objeto tipo StringRequest y luego dentro del constructor de la
         //clase colocamos como parámetros el tipo de método de envío (POST) la URL y seguidamente
@@ -80,12 +70,12 @@ public class TareasPersonales extends AppCompatActivity {
                     try {
                         //Recogemos el JSON y vemos si enrealidad tenemos contenido o no con la respuesta de Booleano que nos llega:
                         JSONObject jsonObject = new JSONObject(response);
-                        String respuesta= jsonObject.getString("contenido");
+                        String respuesta= jsonObject.getString("respuesta");
                         int booleano= jsonObject.getInt("booleano");
 
                         if (booleano == 1){
                             //Si el booleano es 1 se muestra este testo un textview:
-                            noContenido2.setText("Titulos y horas de tus subtareas:");
+                            nofechas.setText("Titulos y fecha de las tareas:");
                             //Metemos los resultados en una Arraylist que luego introduciremos en la Listview con un Array adapter:
                             final ArrayList<String> listSubTareas = new ArrayList<>();
                             final JSONArray jsonArray = new JSONArray(respuesta);
@@ -96,30 +86,33 @@ public class TareasPersonales extends AppCompatActivity {
                                 listSubTareas.add(finalstring);
                             }
 
-                            final ArrayAdapter adapter = new ArrayAdapter<String>(TareasPersonales.this, android.R.layout.simple_list_item_1, listSubTareas);
+                            final ArrayAdapter adapter = new ArrayAdapter<String>(Lista_Tareas_Grupal.this, android.R.layout.simple_list_item_1, listSubTareas);
 
-                            lista2.setAdapter(adapter);
+                            listViewFechasGrupales.setAdapter(adapter);
 
-                            lista2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            listViewFechasGrupales.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                                     try {
                                         //Al hacer clic en la tarea nos llevara a la siguienta activity pasandole los demás datos que hemos sacado en el JSON
-                                        idPersonal = Integer.parseInt(jsonArray.getJSONObject(position).getString("idPersonal"));
-                                        fecha = jsonArray.getJSONObject(position).getString("fecha");
+                                        idGrupal = Integer.parseInt(jsonArray.getJSONObject(position).getString("idGrupal"));
                                         titulo = jsonArray.getJSONObject(position).getString("titulo");
-                                        descrip = jsonArray.getJSONObject(position).getString("descrip");
+                                        nombre = jsonArray.getJSONObject(position).getString("nombre");
+                                        fechaGrupo = jsonArray.getJSONObject(position).getString("fecha");
                                         hora = jsonArray.getJSONObject(position).getString("hora");
+                                        descrip = jsonArray.getJSONObject(position).getString("descrip");
+
 
                                         //Activity donde se verá la tarea al completo:
-                                        Intent intent = new Intent(TareasPersonales.this,Mi_tarea.class);
+                                        Intent intent = new Intent(Lista_Tareas_Grupal.this, TareaGrupal.class);// Cambiar el intem
 
-                                        intent.putExtra("idPersonal",idPersonal);
+                                        intent.putExtra("idGrupal",idGrupal);
+                                        intent.putExtra("nombre",nombre);
                                         intent.putExtra("titulo",titulo);
+                                        intent.putExtra("fecha",fechaGrupo);
                                         intent.putExtra("descrip",descrip);
                                         intent.putExtra("hora",hora);
-                                        intent.putExtra("fecha",fecha);
                                         startActivity(intent);
                                     }
                                     catch (JSONException e) {
@@ -130,7 +123,7 @@ public class TareasPersonales extends AppCompatActivity {
                             });
                             //Si el booleano es 0 y la respuesta tambien, querra decir que no hay datos y mostraremos el siguiente mensaje:
                         }else if (booleano == 0 && respuesta.equals("0")){
-                            noContenido2.setText("No tienes tareas, inserta alguna.");
+                            nofechas.setText("No tienes tareas en este grupo inserta alguna.");
 
                         }
                     } catch (JSONException e) {
@@ -146,7 +139,7 @@ public class TareasPersonales extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
 
                 //Comprobacion de se la conexion es correcta entre Android y el Servidor:
-                Toast.makeText(TareasPersonales.this,"El sitio web no esta en servicio intentelo mas tarde.", Toast.LENGTH_LONG).show();
+                Toast.makeText(Lista_Tareas_Grupal.this,"El sitio web no esta en servicio intentelo mas tarde.", Toast.LENGTH_LONG).show();
             }
 
         }){//4º Agregamos el método getParams() dentro de éste colocaremos los parámetros que nuestro servicio solicita
@@ -157,7 +150,7 @@ public class TareasPersonales extends AppCompatActivity {
                 //En el primer parámetro se colocará el nombre de la variable tipo POST que declaramos en nuestro servicio PHP y en
                 //el segundo agregaremos el dato que deseamos enviar, en este caso nuestros EditText:
                 Map<String,String> parametros = new HashMap<String, String>();
-                parametros.put("idUsuario", String.valueOf(idUsuario));
+                parametros.put("idGrupal", String.valueOf(idGrupal));
 
 
                 //Despues retornamos toda la colección de datos mediante la instancia creada:
@@ -170,26 +163,21 @@ public class TareasPersonales extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest2);
     }
-
-    //Hacemos un ONclic para para que nos lance a otra Activity y poder introducir los datos de la nueva tarea, pasadole el idUsuario:
-    public void nuevaTarea(View view){
-
-        Intent intent = new Intent(getApplicationContext(), Insertar_Tarea.class);
-        intent.putExtra("idUsuario",idUsuario);
+    public void volverG(View view){
+        Intent intent = new Intent(Lista_Tareas_Grupal.this, Lista_Grupos.class);
+        intent.putExtra("idGrupal",idGrupal);
         startActivity(intent);
-        finish();
     }
+    public void insertarTareaGrupal(View view){
+        Intent intent = new Intent(Lista_Tareas_Grupal.this, InsertarTareaGrupal.class);
+        intent.putExtra("idGrupal",idGrupal);
+        startActivity(intent);
 
-    //volever atras según el rol que tengamos:
-    public void volverTareas(View view){
+    }
+    public void verUsuarioas(View view){
+        Intent intent = new Intent(Lista_Tareas_Grupal.this, VerUsuariosGrupal.class);//Crear Ver usuarios
+        intent.putExtra("idGrupal",idGrupal);
+        startActivity(intent);
 
-        if (idRoles.equals("1")){
-            startActivity(new Intent(this, Administrador.class));
-            finish();
-
-        }else if (idRoles.equals("2")){
-            startActivity(new Intent(this, Usuario.class));
-            finish();
-        }
     }
 }

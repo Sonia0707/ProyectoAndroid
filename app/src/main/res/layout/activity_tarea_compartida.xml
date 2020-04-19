@@ -25,6 +25,7 @@
                 android:id="@+id/volverComp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="Vlistatareas"
                 app:srcCompat="@drawable/flecha" />
         </LinearLayout>
 
