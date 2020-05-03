@@ -1,6 +1,8 @@
 package com.example.proyectofinal.agendaPersonal.agendaCompartida;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,11 +35,15 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 public class VerPetiones extends AppCompatActivity {
     //Crear varibles para visualizar y las que necesitemos:
-    ArrayList<String> listpeticiones= new ArrayList<>();
-    ListView listViewPeticiones;
+    List<ClaseBuscarUsuarios> listpeticiones= new ArrayList<>();
+    RecyclerView recyclerViewPeticiones;
+    RecyclerView.Adapter adapter2;
+    RecyclerView.LayoutManager manager;
+
     TextView textoPeticiones;
     int idUsuario,idUsuario2;
     String peticion,idRoles;
@@ -45,7 +51,10 @@ public class VerPetiones extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ver_petiones);
-        listViewPeticiones=(ListView)findViewById(R.id.idPeticiones);
+        recyclerViewPeticiones=(RecyclerView) findViewById(R.id.idPeticiones);
+        manager = new LinearLayoutManager(this);
+        recyclerViewPeticiones.setLayoutManager(manager);
+
         textoPeticiones=(TextView)findViewById(R.id.textoPeticiones2);
 
         //Sharpreferens idUsuario:
@@ -80,18 +89,22 @@ public class VerPetiones extends AppCompatActivity {
                             for (int i = 0; i <jsonArray.length() ; i++) {
                                 JSONObject object = jsonArray.getJSONObject(i);
                                 //Recogemos loe nombres:
-                                String finalstring = object.getString("nombre");
-                                listpeticiones.add(finalstring);
+                                String nombre = object.getString("nombre");
+                                idUsuario2 = object.getInt("idUsuario");
+                                listpeticiones.add(new ClaseBuscarUsuarios(R.drawable.ic_uno,nombre,idUsuario2));
                             }
-                            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(VerPetiones.this, android.R.layout.simple_spinner_item, listpeticiones);
-                            listViewPeticiones.setAdapter(adapter);
-                            listViewPeticiones.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                            adapter2 = new AdaptadorPeticiones(getApplicationContext(),listpeticiones);
+
+                            recyclerViewPeticiones.setAdapter(adapter2);
+
+                            ((AdaptadorPeticiones)adapter2).setOnItemClickListener(new View.OnClickListener() {
                                 @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    //Con la pulsacion en la lista => Creamos un AlertDialogo para decidir si aceptamos la respuesta o no:
-                                    dialogoPeticiones(jsonArray,position);
+                                public void onClick(View v) {
+                                    dialogoPeticiones();
                                 }
                             });
+
                         //Si no hubiera ningún peticion:
                         }else if (booleano == 0 && respuesta.equals("0")){
                             textoPeticiones.setText("No hay peticiiones");
@@ -121,7 +134,7 @@ public class VerPetiones extends AppCompatActivity {
         requestQueue.add(stringRequest2);
     }
     //El metodo dialogoPeticiones que contiene el JSON y la poscion de la lista:
-    public void dialogoPeticiones(final JSONArray jsonArray, final int posicion){
+    public void dialogoPeticiones(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         //Dos opciones:
         // Si => Conecta con el PHP de respuesta para cambiar en la mysql la respuesta a 1:
@@ -129,30 +142,20 @@ public class VerPetiones extends AppCompatActivity {
                 .setCancelable(false)
                 .setPositiveButton("Si", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        try {
-                            idUsuario2 = Integer.parseInt(jsonArray.getJSONObject(posicion).getString("idUsuario"));
-                            Toast.makeText(VerPetiones.this, "Pulsado: "+idUsuario2, Toast.LENGTH_SHORT).show();
-                            ///Acepta peticion:
-                            peticion ="1";
-                            respuestaPeticion("http://192.168.1.131/ProyectoNuevo/AgendaCompartida/respuesta.php?");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        ///Acepta peticion:
+                        peticion ="1";
+                        respuestaPeticion("http://192.168.1.131/ProyectoNuevo/AgendaCompartida/respuesta.php?");
+
                     }
                 })
                 //No => Conecta con el PHP de respuesta para cambiar en la mysql la respuesta a 0:
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        try {
-                            idUsuario2 = Integer.parseInt(jsonArray.getJSONObject(posicion).getString("idUsuario"));
-                            Toast.makeText(VerPetiones.this, "Pulsado: "+idUsuario2, Toast.LENGTH_SHORT).show();
-                            ///Rechaza peticion:
-                            peticion="0";
-                            respuestaPeticion("http://192.168.1.131/ProyectoNuevo/AgendaCompartida/respuesta.php?");
+                        ///Rechaza peticion:
+                        peticion="0";
+                        respuestaPeticion("http://192.168.1.131/ProyectoNuevo/AgendaCompartida/respuesta.php?");
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+
                     }
                 });
         //Se lanza el dialogo

@@ -8,46 +8,67 @@
     android:background="#d8ecea"
     tools:context=".agendaPersonal.Configuracion">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:background="#009688"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/volverAdmin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="Vadmin"
-                app:srcCompat="@drawable/flecha" />
-
-        </LinearLayout>
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
+            android:layout_weight="3.3"
+
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="3.3"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/volverAdmin"
+                    android:layout_width="88dp"
+                    android:layout_height="match_parent"
+                    android:onClick="Vadmin"
+                    app:srcCompat="@drawable/ic_arrow_atras_grande" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="Configuracion"
-                android:textColor="#FFFFFF"
-                android:textSize="25sp" />
+                android:layout_weight="2"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Configuracion"
+                    android:textColor="#000"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="3.3"
+                android:orientation="horizontal"/>
+
         </LinearLayout>
-    </LinearLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -93,11 +114,11 @@
 
         </EditText>
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listaUsuarios"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="20sp"/>
+            android:layout_margin="30sp"/>
 
     </LinearLayout>
 
@@ -113,11 +134,9 @@
             android:layout_width="55dp"
             android:layout_height="62dp"
             android:layout_margin="20dp"
-            android:background="@drawable/mas"
             android:clickable="true"
-
             android:onClick="Insert"
-            app:backgroundTint="#009688"
+            app:backgroundTint="@color/colorPrimary"
             app:srcCompat="@drawable/mas" />
 
 

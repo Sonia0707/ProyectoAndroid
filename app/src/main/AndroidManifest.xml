@@ -8,8 +8,9 @@
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
+        android:theme="@style/AppTheme.NoActionBar"
+        android:usesCleartextTraffic="true"
+        >
         <activity android:name=".agendaPersonal.agendaGrupal.VerUsuariosGrupal"></activity>
         <activity android:name=".agendaPersonal.agendaGrupal.InsertarTareaGrupal" />
         <activity android:name=".agendaPersonal.agendaGrupal.TareaGrupal" />
@@ -29,7 +30,14 @@
         <activity android:name=".agendaPersonal.TareasPersonales" />
         <activity android:name=".agendaPersonal.Registro" />
         <activity android:name=".agendaPersonal.Administrador" />
-        <activity android:name=".agendaPersonal.Usuario" />
+        <activity android:name=".agendaPersonal.Usuario"
+            android:parentActivityName=".agendaPersonal.Login_Main">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".agendaPersonal.Login_Main" ></meta-data>
+        </activity>
+
+
         <activity android:name=".agendaPersonal.OlvidoPassword" />
         <activity android:name=".agendaPersonal.Login_Main">
             <intent-filter>

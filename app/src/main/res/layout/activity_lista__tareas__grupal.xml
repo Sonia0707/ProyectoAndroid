@@ -5,49 +5,64 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#d8ecea"
+    android:background="@color/backgroundcolor"
     tools:context=".agendaPersonal.agendaGrupal.Lista_Tareas_Grupal">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:background="#009688"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/volver_lista_Grupal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="volverG"
-                app:srcCompat="@drawable/flecha" />
-
-        </LinearLayout>
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="277dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3.3"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/volver_lista_Grupal"
+                    android:layout_width="90dp"
+                    android:layout_height="match_parent"
+                    android:onClick="volverG"
+                    app:srcCompat="@drawable/ic_arrow_atras_grande" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="Tareas Grupales"
-                android:textColor="#FFFFFF"
-                android:textSize="25sp" />
+                android:layout_weight="2"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Tareas Grupales"
+                    android:textColor="#FFFFFF"
+                    android:textSize="25sp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="4"
+                    android:orientation="horizontal"/>
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -62,11 +77,11 @@
             android:layout_height="wrap_content"
             />
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/idTareasGrupales"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            />
+            android:layout_margin="20sp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -74,33 +89,30 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:gravity="right"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/verUsuariosGrupo"
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10sp"
-            android:layout_marginTop="20sp"
-            android:layout_marginRight="10sp"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:onClick="verUsuarioas"
-            app:backgroundTint="#009688"
-            app:srcCompat="@android:drawable/ic_menu_view" />
+            android:layout_margin="20sp"
+            android:layout_weight="0.3"
+            android:gravity="right"
+            android:orientation="vertical">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/insertTarea"
-            android:layout_width="55dp"
-            android:layout_height="62dp"
-            android:layout_margin="20dp"
-            android:background="@drawable/mas"
-            android:clickable="true"
-            android:onClick="insertarTareaGrupal"
-            app:backgroundTint="#009688"
-            app:srcCompat="@drawable/mas" />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/insertTarea"
+                android:layout_width="55dp"
+                android:layout_height="62dp"
+                android:layout_margin="20sp"
+                android:background="@drawable/mas"
+                android:clickable="true"
+                android:onClick="insertarTareaGrupal"
+                app:backgroundTint="@color/colorPrimary"
+                app:srcCompat="@drawable/mas" />
 
+
+        </LinearLayout>
 
 
     </LinearLayout>

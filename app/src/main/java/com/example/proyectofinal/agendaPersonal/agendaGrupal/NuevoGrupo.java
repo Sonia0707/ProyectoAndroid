@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -40,7 +41,7 @@ public class NuevoGrupo extends AppCompatActivity {
     ArrayList<String> listaGrupo = new ArrayList<>();
     ListView listViewGrupo;
     TextView nombreG, noAmigosGrupo;
-    int idGrupal,idUsuario,idUsuario2;
+    int idGrupal,idUsuario,idUsuario2, cont=0;
     String nombreGrupal,nombreUsu;
     Button btnGuardarGrupo;
 
@@ -53,7 +54,6 @@ public class NuevoGrupo extends AppCompatActivity {
         noAmigosGrupo = (TextView)findViewById(R.id.noAmigosGrupo);
         btnGuardarGrupo= (Button)findViewById(R.id.btnGuardarGrupo);
 
-        btnGuardarGrupo.setEnabled(false);
 
         //Recoger idGrupal y Nombre para consultas y mostrarlo:
         idGrupal= getIntent().getIntExtra("idGrupal",0);
@@ -97,10 +97,10 @@ public class NuevoGrupo extends AppCompatActivity {
                                 public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                                     if(listViewGrupo.isItemChecked(position)){
                                         try {
-                                            btnGuardarGrupo.setEnabled(true);
+
                                             idUsuario2 = Integer.parseInt(jsonArray.getJSONObject(position).getString("idUsuario"));
                                             nombreUsu = jsonArray.getJSONObject(position).getString("nombre");
-                                            Toast.makeText(NuevoGrupo.this, "Pulsado: "+idUsuario2, Toast.LENGTH_SHORT).show();
+                                            cont++;
                                             guardarAmigosGrupo("http://192.168.1.131/ProyectoNuevo/AgendaGrupal/insertarAmigosGrupo.php");
 
                                         } catch (JSONException e) {
@@ -113,8 +113,8 @@ public class NuevoGrupo extends AppCompatActivity {
                                         try {
                                             idUsuario2 = Integer.parseInt(jsonArray.getJSONObject(position).getString("idUsuario"));
                                             nombreUsu = jsonArray.getJSONObject(position).getString("nombre");
-                                            Toast.makeText(NuevoGrupo.this, "Pulsado: "+idUsuario2, Toast.LENGTH_SHORT).show();
-                                            desclicarChect("http://192.168.1.131/ProyectoNuevo/AgendaGrupal/eliminarGrupo1.php");
+                                            cont--;
+                                            desclicarChect("http://192.168.1.131/ProyectoNuevo/AgendaGrupal/cancelarUsuario.php");
 
                                         } catch (JSONException e) {
                                             e.printStackTrace();
@@ -122,6 +122,7 @@ public class NuevoGrupo extends AppCompatActivity {
 
                                     }
 
+                                    Log.d("Contador: ", String.valueOf(cont));
                                 }
                             });
                             //Si no hay amigos se mostrara el siguiente mensaje:
@@ -154,11 +155,16 @@ public class NuevoGrupo extends AppCompatActivity {
     }
     public void guardar(View view){
         //Intem atras...
-        Toast.makeText(NuevoGrupo.this, "Has creado el grupo", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(getApplicationContext(),Lista_Tareas_Grupal.class); // cambiaar a Tareas
-        intent.putExtra("idGrupal",idGrupal); //Paso el idGrupal para insertar usurarios a ese grupo.
-        startActivity(intent);
-        finish();
+        if (cont > 0){
+            Toast.makeText(NuevoGrupo.this, "Has creado el grupo", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(),Lista_Grupos.class); // cambiaar a Tareas
+            intent.putExtra("idGrupal",idGrupal); //Paso el idGrupal para insertar usurarios a ese grupo.
+            startActivity(intent);
+            finish();
+        }else {
+            Toast.makeText(this, "Tienes que elegir algún usuario para formar el grupo", Toast.LENGTH_SHORT).show();
+        }
+
 
     }
     public void cancelar(View view){
@@ -184,6 +190,7 @@ public class NuevoGrupo extends AppCompatActivity {
                         if (respuesta == 1){
 
                             Toast.makeText(NuevoGrupo.this, "Has introducido: "+nombreUsu, Toast.LENGTH_SHORT).show();
+
                             //Lanzamos a la activity de Nuevo Grupo para buscar los amirgos que queremos añadir en el gupo:
 
 

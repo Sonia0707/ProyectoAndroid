@@ -2,13 +2,17 @@ package com.example.proyectofinal.agendaPersonal;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -34,6 +38,7 @@ public class OlvidoPassword extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_olvido_password);
 
+
         //Visualizamos los controles de la vista:
         correo=(EditText)findViewById(R.id.email);
         btnEnviar = (Button)findViewById(R.id.btnEnviar);
@@ -42,7 +47,13 @@ public class OlvidoPassword extends AppCompatActivity implements View.OnClickLis
         //Escuchar el click dependiento cual pulsemos, para ello implementamos el oyente View.OnClickListener:
         btnEnviar.setOnClickListener(this);
         atras.setOnClickListener(this);
+
+
     }
+
+
+
+
     @Override
     public void onClick(View v) {
 

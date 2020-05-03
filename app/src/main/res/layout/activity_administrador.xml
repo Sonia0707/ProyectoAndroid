@@ -1,64 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#d8ecea"
+    android:background="#99ff"
     tools:context=".agendaPersonal.Usuario">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:background="#009688"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/idvolverLogin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/flecha" />
-        </LinearLayout>
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="3.3"
+                android:orientation="horizontal">
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="Administrador"
-                android:textColor="#FFFFFF"
-                android:textSize="25sp" />
+                android:layout_weight="2"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Administrador"
+                    android:textColor="#000"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="3.3"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+
         </LinearLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:clipToPadding="false"
+        android:gravity="center">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btnPersonalAdmin"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:clickable="true"
+
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardBackgroundColor="#6829D1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:background="@drawable/cercleshapepurple"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_uno" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="Agenda Personal"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_margin="10dp"
+                    android:background="@color/lightgray" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Crea tus propias tareas"
+                    android:textColor="@android:color/darker_gray" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="100"
-        android:orientation="vertical"
-        android:padding="15dp">
+        android:layout_marginTop="25dp"
+        android:clipToPadding="false"
+        android:gravity="center">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btnCompartidaAdmin"
+            android:layout_width="200dp"
             android:layout_height="match_parent"
-            android:layout_weight="2.35"
-            android:orientation="vertical">
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardBackgroundColor="#B1326D">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -67,65 +143,56 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/btnPersonalAdmin"
-                    android:layout_width="337dp"
-                    android:layout_height="90dp"
-                    android:layout_weight="0.5"
-                    app:srcCompat="@mipmap/agenda" />
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:background="@drawable/cercleshapepink"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_people_black_24dp" />
 
                 <TextView
-                    android:id="@+id/AgendaPersonal"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Agenda Personal"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/background_dark"
-                    android:textColorHint="@android:color/background_dark"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="2.35"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/btnCompartidaAdmin"
-                    android:layout_width="372dp"
-                    android:layout_height="90dp"
-                    android:layout_weight="0.5"
-                    app:srcCompat="@mipmap/agenda" />
-
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_marginTop="5dp"
                     android:text="Agenda Compartida"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/background_dark"
-                    android:textColorHint="@android:color/background_dark"
-                    android:textSize="24sp"
                     android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_margin="10dp"
+                    android:background="@color/lightgray" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Comparte con alguien tareas"
+                    android:textColor="@android:color/darker_gray" />
+
             </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:clipToPadding="false"
+        android:gravity="center">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btnGrupalAdmin"
+            android:layout_width="200dp"
             android:layout_height="match_parent"
-            android:layout_weight="2.35"
-            android:orientation="horizontal">
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardBackgroundColor="#2B7256">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -134,30 +201,42 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/btnGrupalAdmin"
-                    android:layout_width="339dp"
-                    android:layout_height="90dp"
-                    android:layout_weight="0.5"
-                    app:srcCompat="@mipmap/agenda" />
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:background="@drawable/btn_fondo_color"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_group_add_black_24dp" />
 
                 <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_marginTop="5dp"
                     android:text="Agenda Grupal"
-                    android:textAlignment="center"
-                    android:textColor="@android:color/background_dark"
-                    android:textColorHint="@android:color/background_dark"
-                    android:textSize="24sp"
                     android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_margin="10dp"
+                    android:background="@color/lightgray" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="Comparte con un grupo "
+                    android:textColor="@android:color/darker_gray" />
+
             </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="2.35"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:orientation="vertical">
 
             <Button
@@ -165,110 +244,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/btn_fondo_color"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"
                 android:elevation="5dp"
                 android:text="CERRAR SESION"
-                android:textColor="#fff"
-                android:textSize="16sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/buscarAmigosAdmin"
-                        android:layout_width="55dp"
-                        android:layout_height="62dp"
-                        android:layout_marginLeft="10sp"
-                        android:layout_marginTop="20sp"
-
-                        android:layout_marginRight="10sp"
-                        android:background="@drawable/mas"
-                        android:clickable="true"
-                        android:onClick="onClick"
-                        app:backgroundTint="#009688"
-                        app:srcCompat="@drawable/mas" />
-
-                    <TextView
-                        android:id="@+id/textView8"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Hacer amigos"
-                        android:textColor="@color/design_default_color_on_secondary"
-                        android:textColorHint="@color/design_default_color_on_secondary"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/buscarPeticionesAdmin"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10sp"
-                        android:layout_marginTop="20sp"
-                        android:layout_marginRight="10sp"
-                        android:clickable="true"
-                        android:onClick="onClick"
-                        app:backgroundTint="#009688"
-                        app:srcCompat="@android:drawable/ic_menu_view" />
-
-                    <TextView
-                        android:id="@+id/txt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Ver peticiones"
-                        android:textColor="@color/design_default_color_on_secondary"
-                        android:textColorHint="@color/design_default_color_on_secondary"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/btnConfiguracion"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10sp"
-                        android:layout_marginTop="20sp"
-                        android:layout_marginRight="10sp"
-                        android:clickable="true"
-                        app:backgroundTint="#009688"
-                        app:srcCompat="@android:drawable/stat_notify_sdcard_prepare" />
+                android:textColor="#000"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
 
-
-                    <TextView
-                        android:id="@+id/textView2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Configuración"
-                        android:textColor="@android:color/background_dark"
-                        android:textColorHint="@android:color/background_dark"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-            </LinearLayout>
 
         </LinearLayout>
-    </LinearLayout>
 
-</LinearLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

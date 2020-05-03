@@ -1,9 +1,17 @@
 package com.example.proyectofinal.agendaPersonal.agendaGrupal;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -19,21 +27,23 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.proyectofinal.R;
-import com.example.proyectofinal.agendaPersonal.Mi_tarea;
-import com.example.proyectofinal.agendaPersonal.TareasPersonales;
-import com.example.proyectofinal.agendaPersonal.agendaCompartida.Lista_tareas;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Lista_Tareas_Grupal extends AppCompatActivity {
 
-    ListView listViewFechasGrupales;
+    RecyclerView recyclerView2;
+    RecyclerView.Adapter adapter3;
+    RecyclerView.LayoutManager manager;
+    List<ClaseGrupal> tareasGrup= new ArrayList<>();
     TextView nofechas;
     String titulo,descrip,hora,fechaGrupo,nombre;
     int idGrupal;
@@ -42,14 +52,42 @@ public class Lista_Tareas_Grupal extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista__tareas__grupal);
-        listViewFechasGrupales= (ListView)findViewById(R.id.idTareasGrupales);
+        recyclerView2 = (RecyclerView) findViewById(R.id.idTareasGrupales);
+        manager = new LinearLayoutManager(this);
+        recyclerView2.setLayoutManager(manager);
+
+        RecyclerView.ItemDecoration divider = new DividerItemDecoration(this,DividerItemDecoration.VERTICAL);
+        recyclerView2.addItemDecoration(divider);
+
+
         nofechas= (TextView) findViewById(R.id.nofechas);
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
 
         //Recoger idGrupal y Nombre para consultas y mostrarlo:
         idGrupal= getIntent().getIntExtra("idGrupal",0);
 
+
         //De primeras que conete con la URL de nuestro servidor PHP
         UrlTareasGrupales("http://192.168.1.131/ProyectoNuevo/AgendaGrupal/listaTareasGrupal.php");
+    }
+    //Metodo para mostrar menu oculto:
+    public boolean onCreateOptionsMenu(Menu menu3){
+        getMenuInflater().inflate(R.menu.menu3, menu3);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+
+        if (id == R.id.item6){
+
+            Intent intent = new Intent(Lista_Tareas_Grupal.this, VerUsuariosGrupal.class);
+            intent.putExtra("idGrupal",idGrupal);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
     }
     public void UrlTareasGrupales(String URL){
 
@@ -77,50 +115,42 @@ public class Lista_Tareas_Grupal extends AppCompatActivity {
                             //Si el booleano es 1 se muestra este testo un textview:
                             nofechas.setText("Titulos y fecha de las tareas:");
                             //Metemos los resultados en una Arraylist que luego introduciremos en la Listview con un Array adapter:
-                            final ArrayList<String> listSubTareas = new ArrayList<>();
+
                             final JSONArray jsonArray = new JSONArray(respuesta);
                             for (int i = 0; i <jsonArray.length() ; i++) {
                                 JSONObject object = jsonArray.getJSONObject(i);
                                 //En esta activity solo mostraremos el titulo de la tarea y la fecha:
-                                String finalstring = "Nombre: "+object.getString("titulo") + " -> Fecha: " + object.getString("fecha");
-                                listSubTareas.add(finalstring);
+                                idGrupal = object.getInt("idGrupal");
+                                fechaGrupo = object.getString("fecha");
+                                titulo = object.getString("titulo");
+                                descrip = object.getString("descrip");
+                                nombre = object.getString("nombre");
+                                hora = object.getString("hora");
+                                tareasGrup.add(new ClaseGrupal(R.drawable.ic_launcher_icon_tareas_foreground,idGrupal,titulo,hora,nombre,fechaGrupo,descrip));
+
                             }
 
-                            final ArrayAdapter adapter = new ArrayAdapter<String>(Lista_Tareas_Grupal.this, android.R.layout.simple_list_item_1, listSubTareas);
+                            adapter3= new AdaptadorGrupal(Lista_Tareas_Grupal.this,tareasGrup);
+                            recyclerView2.setAdapter(adapter3);
 
-                            listViewFechasGrupales.setAdapter(adapter);
+                            moverItems3(recyclerView2,tareasGrup);
 
-                            listViewFechasGrupales.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            ((AdaptadorGrupal)adapter3).setOnItemClickListener(new View.OnClickListener() {
                                 @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                                    try {
-                                        //Al hacer clic en la tarea nos llevara a la siguienta activity pasandole los demás datos que hemos sacado en el JSON
-                                        idGrupal = Integer.parseInt(jsonArray.getJSONObject(position).getString("idGrupal"));
-                                        titulo = jsonArray.getJSONObject(position).getString("titulo");
-                                        nombre = jsonArray.getJSONObject(position).getString("nombre");
-                                        fechaGrupo = jsonArray.getJSONObject(position).getString("fecha");
-                                        hora = jsonArray.getJSONObject(position).getString("hora");
-                                        descrip = jsonArray.getJSONObject(position).getString("descrip");
-
-
-                                        //Activity donde se verá la tarea al completo:
-                                        Intent intent = new Intent(Lista_Tareas_Grupal.this, TareaGrupal.class);// Cambiar el intem
-
-                                        intent.putExtra("idGrupal",idGrupal);
-                                        intent.putExtra("nombre",nombre);
-                                        intent.putExtra("titulo",titulo);
-                                        intent.putExtra("fecha",fechaGrupo);
-                                        intent.putExtra("descrip",descrip);
-                                        intent.putExtra("hora",hora);
-                                        startActivity(intent);
-                                    }
-                                    catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
+                                public void onClick(View v) {
+                                    //Activity donde se verá la tarea al completo:
+                                    Intent intent = new Intent(Lista_Tareas_Grupal.this, TareaGrupal.class);// Cambiar el intem
+                                    intent.putExtra("idGrupal",tareasGrup.get(recyclerView2.getChildAdapterPosition(v)).getIdGrupal());
+                                    intent.putExtra("nombre",tareasGrup.get(recyclerView2.getChildAdapterPosition(v)).getNombrePersona());
+                                    intent.putExtra("titulo",tareasGrup.get(recyclerView2.getChildAdapterPosition(v)).getTitulo());
+                                    intent.putExtra("fecha",tareasGrup.get(recyclerView2.getChildAdapterPosition(v)).getFechaTareas());
+                                    intent.putExtra("descrip",tareasGrup.get(recyclerView2.getChildAdapterPosition(v)).getDescripcion());
+                                    intent.putExtra("hora",tareasGrup.get(recyclerView2.getChildAdapterPosition(v)).getHora());
+                                    startActivity(intent);
 
                                 }
                             });
+
                             //Si el booleano es 0 y la respuesta tambien, querra decir que no hay datos y mostraremos el siguiente mensaje:
                         }else if (booleano == 0 && respuesta.equals("0")){
                             nofechas.setText("No tienes tareas en este grupo inserta alguna.");
@@ -174,10 +204,27 @@ public class Lista_Tareas_Grupal extends AppCompatActivity {
         startActivity(intent);
 
     }
-    public void verUsuarioas(View view){
-        Intent intent = new Intent(Lista_Tareas_Grupal.this, VerUsuariosGrupal.class);//Crear Ver usuarios
-        intent.putExtra("idGrupal",idGrupal);
-        startActivity(intent);
+    public void moverItems3(RecyclerView recyclerView, final List list){
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,0) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder dragged, @NonNull RecyclerView.ViewHolder target) {
+
+                int position_dragged = dragged.getAdapterPosition();
+                int position_target = target.getAdapterPosition();
+
+                Collections.swap(list,position_dragged,position_target);
+
+                adapter3.notifyItemMoved(position_dragged,position_target);
+
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        });
+        helper.attachToRecyclerView(recyclerView);
 
     }
 }

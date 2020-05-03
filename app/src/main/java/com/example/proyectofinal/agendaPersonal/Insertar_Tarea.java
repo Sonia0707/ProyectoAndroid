@@ -92,9 +92,14 @@ public class Insertar_Tarea extends AppCompatActivity implements View.OnClickLis
                 horas = idHora.getText().toString();
                 descrip = idDescrip.getText().toString();
 
-                if (!nombre.isEmpty() && !fecha.isEmpty() && !horas.isEmpty() && !descrip.isEmpty()) {
-                     insertarTarea("http://192.168.1.131/ProyectoNuevo/AgendaPersonal/insertarTarea.php");
-                } else {
+                if (!nombre.isEmpty() && !descrip.isEmpty()) {
+                    if (!fecha.isEmpty() && !horas.isEmpty()){
+                        insertarTarea("http://192.168.1.131/ProyectoNuevo/AgendaPersonal/insertarTarea.php");
+                    }else {
+                        insertarTarea2("http://192.168.1.131/ProyectoNuevo/AgendaPersonal/insertarTarea2.php");
+                    }
+
+                } else  {
                     Toast.makeText(this, "No se permiten campos vacios", Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -226,5 +231,75 @@ public class Insertar_Tarea extends AppCompatActivity implements View.OnClickLis
         //instancia de nuestro objeto stringRequest ésta nos ayudará a procesar todas las peticiones hechas:
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
+    }
+    public void insertarTarea2 (String URL){
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+
+            // 2º La cual nos generará automaticamente el listener onResponse que éste reaccionara en
+            //caso de que la petición se procese:
+            @Override
+            public void onResponse(String response) {
+                //Validamos que el response si no falla nos da a entender que la conexión es buena:
+                if (!response.isEmpty()){
+                    //Recogemos el JSON de PHP:
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        int respuesta= jsonObject.getInt("respuesta");
+
+                        //A) Si la respuesta es 1 es que nuestra tarea se ha insertado correctamente:
+                        if (respuesta == 1){
+
+                            //Lanzamos a la activity de Tareas Personales para ver si el contenido esta metido:
+                            Intent intent = new Intent(getApplicationContext(),TareasPersonales.class);
+                            startActivity(intent);
+                            finish();
+
+                            //B) La conexión con la base de datos es erronia, lanzaremos el mensaje para que le usurio sepa que hay un problema.
+                        }else if (respuesta == 0){
+
+                            Toast.makeText(Insertar_Tarea.this, "Error de conexion con la base de datos, intentelo mas tarde", Toast.LENGTH_SHORT).show();
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+            //3º Agregaremos la clase Response.ErrorListener() este nos generará el listener de un error response
+            //el cual reaccionará en caso de no procesarse la petición al servidor:
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                //Comprobacion de se la conexion es correcta entre Android y el Servidor:
+                Toast.makeText(Insertar_Tarea.this,"El sitio web no esta en servicio intentelo mas tarde.", Toast.LENGTH_LONG).show();
+            }
+
+        }){//5º Agregamos el método getParams() dentro de éste colocaremos los parámetros que nuestro servicio solicita
+            //para devolvernos una respuesta:
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                //En el primer parámetro se colocará el idUsuario que tenemos guardado del Logeo y en
+                //los demás agregaremos los datos que deseamos enviar, en este caso nuestros EditText:
+                Map<String,String> parametros = new HashMap<String, String>();
+                parametros.put("idUsuario", String.valueOf(idUsuario));
+                parametros.put("titulo",nombre);
+                parametros.put("descrip",descrip);
+
+
+
+                //Despues retornamos toda la colección de datos mediante la instancia creada:
+                return parametros;
+            }
+        };
+
+        //6º Por ulltimo hacemos uso de la clase RequestQueue creamos una instancia de ésta y en la siguiente línea agregaremos la
+        //instancia de nuestro objeto stringRequest ésta nos ayudará a procesar todas las peticiones hechas:
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+
     }
 }

@@ -1,16 +1,18 @@
 package com.example.proyectofinal.agendaPersonal;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,24 +30,37 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TareasPersonales extends AppCompatActivity {
 
     //Crear varibles para visualizar y las que necesitemos:
     ImageView SubVolver;
-    ListView lista2;
+    RecyclerView lista2;
+    RecyclerView.Adapter adapter;
+    RecyclerView.LayoutManager manager;
     TextView noContenido2;
     String titulo,descrip,hora,fecha,idRoles;
     int idPersonal,idUsuario;
+    List<LisviewTareas> listatareas = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tareas_personales);
 
-        lista2= (ListView)findViewById(R.id.idTareasPersonales);
+        lista2= (RecyclerView) findViewById(R.id.recycler);
+
+        manager = new LinearLayoutManager(this);
+        lista2.setLayoutManager(manager);
+
+        RecyclerView.ItemDecoration divider = new DividerItemDecoration(this,DividerItemDecoration.VERTICAL);
+        lista2.addItemDecoration(divider);
+
         noContenido2= (TextView) findViewById(R.id.noContenido2);
         SubVolver= (ImageView) findViewById(R.id.SubVolver);
 
@@ -85,49 +100,43 @@ public class TareasPersonales extends AppCompatActivity {
 
                         if (booleano == 1){
                             //Si el booleano es 1 se muestra este testo un textview:
-                            noContenido2.setText("Titulos y horas de tus subtareas:");
+                            noContenido2.setText("Lista de tareas");
                             //Metemos los resultados en una Arraylist que luego introduciremos en la Listview con un Array adapter:
-                            final ArrayList<String> listSubTareas = new ArrayList<>();
+
                             final JSONArray jsonArray = new JSONArray(respuesta);
                             for (int i = 0; i <jsonArray.length() ; i++) {
                                 JSONObject object = jsonArray.getJSONObject(i);
                                 //En esta activity solo mostraremos el titulo de la tarea y la fecha:
-                                String finalstring = "Nombre: "+object.getString("titulo") + " -> Fecha: " + object.getString("fecha");
-                                listSubTareas.add(finalstring);
+
+                                String nombre = object.getString("titulo");
+                                String fech = object.getString("fecha");
+                                String hora = object.getString("hora");
+                                String descripcion = object.getString("descrip");
+                                int idPersonal = object.getInt("idPersonal");
+
+                                listatareas.add(new LisviewTareas(nombre,fech,R.drawable.ic_launcher_icon_tareas_foreground,idPersonal,hora,descripcion));
                             }
-
-                            final ArrayAdapter adapter = new ArrayAdapter<String>(TareasPersonales.this, android.R.layout.simple_list_item_1, listSubTareas);
-
+                            adapter = new Adaptador(listatareas,TareasPersonales.this);
                             lista2.setAdapter(adapter);
 
-                            lista2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            moverItems(lista2,listatareas);
+
+                            ((Adaptador)adapter).setOnItemClickListener(new View.OnClickListener() {
                                 @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                public void onClick(View v) {
+                                    //Activity donde se verá la tarea al completo:
+                                    Intent intent = new Intent(TareasPersonales.this,Mi_tarea.class);
 
-                                    try {
-                                        //Al hacer clic en la tarea nos llevara a la siguienta activity pasandole los demás datos que hemos sacado en el JSON
-                                        idPersonal = Integer.parseInt(jsonArray.getJSONObject(position).getString("idPersonal"));
-                                        fecha = jsonArray.getJSONObject(position).getString("fecha");
-                                        titulo = jsonArray.getJSONObject(position).getString("titulo");
-                                        descrip = jsonArray.getJSONObject(position).getString("descrip");
-                                        hora = jsonArray.getJSONObject(position).getString("hora");
-
-                                        //Activity donde se verá la tarea al completo:
-                                        Intent intent = new Intent(TareasPersonales.this,Mi_tarea.class);
-
-                                        intent.putExtra("idPersonal",idPersonal);
-                                        intent.putExtra("titulo",titulo);
-                                        intent.putExtra("descrip",descrip);
-                                        intent.putExtra("hora",hora);
-                                        intent.putExtra("fecha",fecha);
-                                        startActivity(intent);
-                                    }
-                                    catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
+                                    intent.putExtra("idPersonal",listatareas.get(lista2.getChildAdapterPosition(v)).getIdPersonal());
+                                    intent.putExtra("titulo",listatareas.get(lista2.getChildAdapterPosition(v)).getNombreTarea());
+                                    intent.putExtra("descrip",listatareas.get(lista2.getChildAdapterPosition(v)).getDescripcion());
+                                    intent.putExtra("hora",listatareas.get(lista2.getChildAdapterPosition(v)).getHora());
+                                    intent.putExtra("fecha", listatareas.get(lista2.getChildAdapterPosition(v)).getFechaTareas());
+                                    startActivity(intent);
 
                                 }
                             });
+
                             //Si el booleano es 0 y la respuesta tambien, querra decir que no hay datos y mostraremos el siguiente mensaje:
                         }else if (booleano == 0 && respuesta.equals("0")){
                             noContenido2.setText("No tienes tareas, inserta alguna.");
@@ -170,6 +179,32 @@ public class TareasPersonales extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest2);
     }
+    public void moverItems(RecyclerView recyclerView, final List list){
+
+
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,0) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder dragged, @NonNull RecyclerView.ViewHolder target) {
+
+                int position_dragged = dragged.getAdapterPosition();
+                int position_target = target.getAdapterPosition();
+
+                Collections.swap(list,position_dragged,position_target);
+
+                adapter.notifyItemMoved(position_dragged,position_target);
+
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        });
+        helper.attachToRecyclerView(recyclerView);
+
+
+    }
 
     //Hacemos un ONclic para para que nos lance a otra Activity y poder introducir los datos de la nueva tarea, pasadole el idUsuario:
     public void nuevaTarea(View view){
@@ -192,4 +227,6 @@ public class TareasPersonales extends AppCompatActivity {
             finish();
         }
     }
+
+
 }

@@ -1,6 +1,8 @@
 package com.example.proyectofinal.agendaPersonal;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +11,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,8 +30,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.proyectofinal.R;
+import com.example.proyectofinal.agendaPersonal.agendaCompartida.AdaptadorPeticiones;
+import com.example.proyectofinal.agendaPersonal.agendaCompartida.ClaseBuscarUsuarios;
 import com.example.proyectofinal.agendaPersonal.agendaCompartida.ListaAmigosTareas;
 import com.example.proyectofinal.agendaPersonal.agendaCompartida.VerPetiones;
+import com.example.proyectofinal.agendaPersonal.agendaGrupal.AdaptadorVerUsuarios;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,19 +42,22 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 public class Configuracion extends AppCompatActivity  {
     //Crear varibles para visualizar y las que necesitemos:
     ImageView volverAdmind;
-    Button insertarUsu;
-    ArrayList<String> listaUsuarios = new ArrayList<>();
-    ArrayList<String> prueba = new ArrayList<>();
-    ListView listViewUsuarios;
+    List<ClaseBuscarUsuarios> listaUsuarios = new ArrayList<>();
+
+    RecyclerView recyclerViewUsu;
+    RecyclerView.Adapter adapter2;
+    RecyclerView.LayoutManager manager;
+
     TextView tituloUsuarios;
     EditText buscarUsuarios;
-    int idUsuario, idUsuario2;
+    int idUsuario, idUsuario2,idUsuario3;
     String rol, nombre;
 
 
@@ -57,7 +66,12 @@ public class Configuracion extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configuracion);
         volverAdmind=(ImageView)findViewById(R.id.volverAdmin);
-        listViewUsuarios= (ListView)findViewById(R.id.listaUsuarios);
+        recyclerViewUsu= (RecyclerView) findViewById(R.id.listaUsuarios);
+
+        manager = new LinearLayoutManager(this);
+        recyclerViewUsu.setLayoutManager(manager);
+        recyclerViewUsu.setHasFixedSize(true);
+
         tituloUsuarios = (TextView)findViewById(R.id.tituloUsuarios);
         buscarUsuarios = (EditText)findViewById(R.id.editBuscarUsuarios);
 
@@ -89,27 +103,23 @@ public class Configuracion extends AppCompatActivity  {
                                 JSONObject object = jsonArray.getJSONObject(i);
                                 //Recogemos loe nombres de los usuarios:
                                 String nombre = object.getString("nombre");
-                                listaUsuarios.add(nombre);
+                                idUsuario2 = object.getInt("idUsuario");
+                                listaUsuarios.add(new ClaseBuscarUsuarios(R.drawable.ic_uno,nombre,idUsuario2));
                             }
-                            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(Configuracion.this, android.R.layout.simple_list_item_1, listaUsuarios);
-                            listViewUsuarios.setAdapter(adapter);
-                            listViewUsuarios.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                               @Override
-                               public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                                   try {
-                                       idUsuario2 = Integer.parseInt(jsonArray.getJSONObject(position).getString("idUsuario"));
-                                       prueba.add(String.valueOf(idUsuario2));
 
+                            adapter2 = new AdaptadorPeticiones(getApplicationContext(),listaUsuarios);
 
-                                       Toast.makeText(Configuracion.this, "Pulsado: "+prueba, Toast.LENGTH_SHORT).show();
-                                       muestraDialogo(jsonArray,position);
+                            recyclerViewUsu.setAdapter(adapter2);
 
-                                   } catch (JSONException e) {
-                                       e.printStackTrace();
-                                   }
+                            ((AdaptadorPeticiones)adapter2).setOnItemClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    idUsuario3= listaUsuarios.get(recyclerViewUsu.getChildLayoutPosition(v)).getIdUsuario2();
+                                    muestraDialogo();
 
-                               }
-                           });
+                                }
+                            });
+
                             buscarUsuarios.addTextChangedListener(new TextWatcher() {
                                 @Override
                                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -118,11 +128,12 @@ public class Configuracion extends AppCompatActivity  {
 
                                 @Override
                                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                    adapter.getFilter().filter(s);
+
                                 }
 
                                 @Override
                                 public void afterTextChanged(Editable s) {
+                                    filter(s.toString(), (AdaptadorPeticiones) adapter2);
 
 
                                 }
@@ -161,7 +172,7 @@ public class Configuracion extends AppCompatActivity  {
     }
 
     //Mostramos un dialogo, cuando pulsamos en en uno de los usuarios:
-    public void muestraDialogo(final JSONArray jsonArray, final int posicion){
+    public void muestraDialogo(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("¿ Deseas realizar algun cambio ?")
                 //Esliminar que lo elimina de la tabla de usuarios y borra las relaciones que tubiera en la tabla de amisgos:
@@ -208,8 +219,8 @@ public class Configuracion extends AppCompatActivity  {
                     try {
                         ////Recogemos el JSON
                         JSONObject jsonObject = new JSONObject(response);
-                        String respuesta= jsonObject.getString("respuesta");
-
+                        String respuesta= jsonObject.getString("res");
+                        Log.d("Problema: ",respuesta);
                         //Si respuesta es igual a uno se produce el cambio, PHP lo cambia segun el rol enviado:
                         if (respuesta.equals("1")){
                             //Para comprobarlo en android hacemos este if que dice si rol es 1 es admin, si rol es 2 es ususario:
@@ -238,7 +249,7 @@ public class Configuracion extends AppCompatActivity  {
             protected Map<String, String> getParams() throws AuthFailureError {
                 //Le pasamos al PHP el idUsuario y el rol para que realice los cambios:
                 Map<String,String> parametros = new HashMap<String, String>();
-                parametros.put("idUsuario", String.valueOf(idUsuario2));
+                parametros.put("idUsuario", String.valueOf(idUsuario3));
                 parametros.put("rol", String.valueOf(rol));
                 //Despues retornamos toda la colección de datos mediante la instancia creada:
                 return parametros;
@@ -285,7 +296,7 @@ public class Configuracion extends AppCompatActivity  {
             protected Map<String, String> getParams() throws AuthFailureError {
                 //Le pasamor el idUsuario al PHP
                 Map<String,String> parametros = new HashMap<String, String>();
-                parametros.put("idUsuario", String.valueOf(idUsuario2));
+                parametros.put("idUsuario", String.valueOf(idUsuario3));
                 //Despues retornamos toda la colección de datos mediante la instancia creada:
                 return parametros;
             }
@@ -293,6 +304,17 @@ public class Configuracion extends AppCompatActivity  {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest2);
     }
+
+    private void filter(String text,AdaptadorPeticiones adapter2){
+        ArrayList<ClaseBuscarUsuarios> filteredList = new ArrayList<>();
+        for (ClaseBuscarUsuarios item : listaUsuarios){
+            if (item.getNombreUsuarios().toLowerCase().contains(text.toLowerCase())){
+                filteredList.add(item);
+            }
+        }
+        adapter2.filterList(filteredList);
+    }
+
     //Atras de nuevo
     public void  Vadmin(View view){
         Intent intent = new Intent(getApplicationContext(), Administrador.class);

@@ -2,6 +2,10 @@
     <string name="app_name">ProyectoFinal</string>
     <string name="formato_fecha">dd/mm/yyyy</string>
     <string name="formato_hora">hh:mm</string>
-    <string name="grvity">center</string>
+    <string name="item1">Buscar Amigos</string>
+    <string name="item2">Ver Peticiones</string>
+    <string name="item3">Configuración</string>
+    <string name="item6">Ver componentes</string>
+
     <string name="title_activity_pruebaa_proyec">PruebaaProyec</string>
 </resources>

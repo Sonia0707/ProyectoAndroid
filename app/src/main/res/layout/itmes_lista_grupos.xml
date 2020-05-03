@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/imageGrupo"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="20sp"
+        android:layout_marginTop="25sp"
+        android:layout_marginRight="20sp"
+        android:background="@drawable/btn_fondo_color"
+         />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10sp"
+        android:layout_marginTop="35sp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/nombGrupo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tarea1"
+            android:textColor="@color/design_default_color_on_secondary"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/FechaTareasG"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="08/09/2020"
+            android:textSize="16dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10sp"
+        android:layout_marginTop="35sp"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/nombPersona"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:text="Nombre"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

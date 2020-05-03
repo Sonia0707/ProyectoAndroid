@@ -1,10 +1,15 @@
 package com.example.proyectofinal.agendaPersonal.agendaCompartida;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,21 +32,30 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ListaAmigosTareas extends AppCompatActivity{
     //Crear varibles para visualizar y las que necesitemos:
     ImageView volverPrincipal;
-    ListView idAmigos;
+    RecyclerView idAmigos;
+    RecyclerView.Adapter adapter2;
+    RecyclerView.LayoutManager manager;
     TextView noAmigos;
-    ArrayList<String>Amigos= new ArrayList<>();
+    List<ClaseAmigos> Amigos= new ArrayList<>();
     int idUsuario,idUsuario2;
     String idRoles;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activiry_lista_amigos_tarea);
-        idAmigos=(ListView)findViewById(R.id.idAmigos);
+        idAmigos=(RecyclerView) findViewById(R.id.idAmigos);
+        manager = new LinearLayoutManager(this);
+        idAmigos.setLayoutManager(manager);
+
+        RecyclerView.ItemDecoration divider = new DividerItemDecoration(this,DividerItemDecoration.VERTICAL);
+        idAmigos.addItemDecoration(divider);
+
         noAmigos=(TextView)findViewById(R.id.noAmigos);
         volverPrincipal=(ImageView)findViewById(R.id.volverPrincipal);
 
@@ -72,30 +86,27 @@ public class ListaAmigosTareas extends AppCompatActivity{
                         if (booleano == 1){
                             noAmigos.setText("Amigos y tareas:");
                             final JSONArray jsonArray = new JSONArray(respuesta);
-                            int cont=0;
                             //Metemos los resultados en una Arraylist que luego introduciremos en la Listview con un Array adapter:
                             for (int i = 0; i <jsonArray.length() ; i++) {
-                                cont++;
                                 JSONObject object = jsonArray.getJSONObject(i);
-                                String finalstring = cont+"."+object.getString("nombre");
-                                Amigos.add(finalstring);
+                                String nombreAmig = object.getString("nombre");
+                                idUsuario2=object.getInt("idUsuario");
+                                Log.d("idUsuario2",String.valueOf(idUsuario2));
+
+                                Amigos.add(new ClaseAmigos(R.drawable.ic_people_black_24dp,nombreAmig,idUsuario2));
                             }
-                            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(ListaAmigosTareas.this, android.R.layout.simple_spinner_item, Amigos);
-                            idAmigos.setAdapter(adapter);
-                            idAmigos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            adapter2= new AdaptadorAmigos(getApplicationContext(),Amigos);
+                            idAmigos.setAdapter(adapter2);
+
+                            ((AdaptadorAmigos)adapter2).setOnItemClickListener(new View.OnClickListener() {
                                 @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    try{
-                                        //Al pulsar en la lista guardamos el idUsurio que nos a enviado el JSON
-                                        idUsuario2 = Integer.parseInt(jsonArray.getJSONObject(position).getString("idUsuario"));
-                                        Toast.makeText(ListaAmigosTareas.this, "Pulsado: "+idUsuario2, Toast.LENGTH_SHORT).show();
-                                        //Y se lo mandamos a Lista tareas para ver que tareas tenemos con ese usuario en concreto:
-                                        Intent intent = new Intent(ListaAmigosTareas.this, Lista_tareas.class);
-                                        intent.putExtra("idUsuario2",idUsuario2);
-                                        startActivity(intent);
-                                    }catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
+                                public void onClick(View v) {
+                                    //Y se lo mandamos a Lista tareas para ver que tareas tenemos con ese usuario en concreto:
+                                    Intent intent = new Intent(ListaAmigosTareas.this, Lista_tareas.class);
+                                    intent.putExtra("idUsuario2",Amigos.get(idAmigos.getChildAdapterPosition(v)).getIdUsuario2());
+                                    Log.d("idUsuario2",String.valueOf(idUsuario2));
+                                    startActivity(intent);
+
                                 }
                             });
 

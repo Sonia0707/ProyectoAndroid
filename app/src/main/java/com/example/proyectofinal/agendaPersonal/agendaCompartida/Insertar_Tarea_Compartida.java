@@ -96,8 +96,13 @@ public class Insertar_Tarea_Compartida extends AppCompatActivity implements View
                 horas = idHora.getText().toString();
                 descrip = idDescrip.getText().toString();
 
-                if (!nombre.isEmpty() && !fecha.isEmpty() && !horas.isEmpty() && !descrip.isEmpty()) {
-                    insertarTareaComp("http://192.168.1.131/ProyectoNuevo/AgendaCompartida/InsertarContenido.php?");
+                if (!nombre.isEmpty() && !descrip.isEmpty()) {
+                    if (!fecha.isEmpty() && !horas.isEmpty() ){
+                        insertarTareaComp("http://192.168.1.131/ProyectoNuevo/AgendaCompartida/InsertarContenido.php?");
+                    }else {
+                        insertarTareaComp2("http://192.168.1.131/ProyectoNuevo/AgendaCompartida/InsertarContenido2.php?");
+                    }
+
                 } else {
                     Toast.makeText(this, "No se permiten campos vacios", Toast.LENGTH_SHORT).show();
                 }
@@ -203,5 +208,56 @@ public class Insertar_Tarea_Compartida extends AppCompatActivity implements View
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
+    }
+    public void insertarTareaComp2(String URL){
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                if (!response.isEmpty()){
+                    try {
+                        //Respuesta del JSON de PHP:
+                        JSONObject jsonObject = new JSONObject(response);
+                        int respuesta= jsonObject.getInt("respuesta");
+                        //Si la respuesta es uno quiere decir que la conexion ha ido bien y se ha insertado en la tabla:
+                        if (respuesta == 1){
+                            Toast.makeText(Insertar_Tarea_Compartida.this, "Insertado Contenido", Toast.LENGTH_SHORT).show();
+                            //Lanzamos a la activity de Lista_Tareas para ver si el contenido esta metido:
+                            Intent intent = new Intent(getApplicationContext(),Lista_tareas.class);
+                            intent.putExtra("idUsuario2",idUsuario2);
+                            startActivity(intent);
+                            finish();
+                            //B) La conexión con la base de datos es erronia, lanzaremos el mensaje para que le usurio sepa que hay un problema.
+                        }else if (respuesta == 0){
+                            Toast.makeText(Insertar_Tarea_Compartida.this, "Error de conexion con la base de datos, intentelo mas tarde", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Comprobacion de se la conexion es correcta entre Android y el Servidor:
+                Toast.makeText(Insertar_Tarea_Compartida.this,"El sitio web no esta en servicio intentelo mas tarde.", Toast.LENGTH_LONG).show();
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                //Pasamos los parametros modificados al PHP para que este los modifique en la tabla:
+                Map<String,String> parametros = new HashMap<String, String>();
+                parametros.put("idUsuario", String.valueOf(idUsuario));
+                parametros.put("idUsuario2", String.valueOf(idUsuario2));
+                parametros.put("titulo",nombre);
+                parametros.put("descrip",descrip);
+
+                //Despues retornamos toda la colección de datos mediante la instancia creada:
+                return parametros;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+
     }
 }

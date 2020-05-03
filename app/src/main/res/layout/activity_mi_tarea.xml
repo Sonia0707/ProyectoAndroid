@@ -5,50 +5,70 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#d8ecea"
+    android:background="@color/backgroundcolor"
     tools:context=".agendaPersonal.Mi_tarea">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:background="#009688"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/volver"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="volver"
-                app:srcCompat="@drawable/flecha" />
-
-
-        </LinearLayout>
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
+            android:layout_weight="0.5"
+
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/volver"
+                    android:layout_width="62dp"
+                    android:layout_height="match_parent"
+                    android:onClick="volver"
+                    app:srcCompat="@drawable/ic_arrow_atras_grande" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="Mi Tarea"
-                android:textColor="#FFFFFF"
-                android:textSize="25sp" />
+                android:layout_weight="2"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Mi Tarea"
+                    android:textColor="#000"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="3.3"
+                android:orientation="horizontal"/>
         </LinearLayout>
-    </LinearLayout>
+
+
+    </androidx.appcompat.widget.Toolbar>
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -68,6 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
                 android:text="Titulo: "
+                android:textColor="@color/design_default_color_on_secondary"
                 android:textSize="25sp" />
 
             <EditText
@@ -90,6 +111,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginRight="5dp"
                 android:text="Fecha:"
+                android:textColor="@color/design_default_color_on_secondary"
                 android:textSize="25sp" />
 
 
@@ -115,6 +137,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginRight="5dp"
                 android:text="Hora: "
+                android:textColor="@color/design_default_color_on_secondary"
                 android:textSize="25sp" />
 
 
@@ -135,8 +158,9 @@
             android:layout_height="match_parent"
             android:ems="10"
             android:gravity="start|top"
-            android:hint="Prueba de descripcion"
+            android:hint="Descripcion..."
             android:inputType="textMultiLine"
+            android:textColor="@color/design_default_color_on_secondary"
             android:textSize="25sp" />
 
     </LinearLayout>
@@ -157,7 +181,7 @@
             android:layout_weight="1"
             android:clickable="true"
             android:onClick="modificar"
-            app:backgroundTint="#009688"
+            app:backgroundTint="@color/colorPrimary"
             app:srcCompat="@android:drawable/ic_menu_edit" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -168,7 +192,7 @@
             android:layout_weight="1"
             android:clickable="true"
             android:onClick="eliminar"
-            app:backgroundTint="#009688"
+            app:backgroundTint="@color/colorPrimary"
             app:srcCompat="@android:drawable/ic_delete" />
     </LinearLayout>
 </LinearLayout>

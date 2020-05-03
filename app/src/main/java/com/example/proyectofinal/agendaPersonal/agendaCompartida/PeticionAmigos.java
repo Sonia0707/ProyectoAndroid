@@ -1,5 +1,7 @@
 package com.example.proyectofinal.agendaPersonal.agendaCompartida;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,6 +29,8 @@ import com.example.proyectofinal.R;
 import com.example.proyectofinal.agendaPersonal.Administrador;
 import com.example.proyectofinal.agendaPersonal.Login_Main;
 import com.example.proyectofinal.agendaPersonal.Usuario;
+import com.example.proyectofinal.agendaPersonal.agendaGrupal.Lista_Grupos;
+import com.example.proyectofinal.agendaPersonal.agendaGrupal.Lista_Tareas_Grupal;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,21 +38,28 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 public class PeticionAmigos extends AppCompatActivity {
     //Crear varibles para visualizar y las que necesitemos:
-    ArrayList<String> listUsuarios = new ArrayList<>();
-    ListView listViewUsuarios;
+    List<ClaseBuscarUsuarios> listUsuarios = new ArrayList<>();
+    RecyclerView recyclerViewUsuarios;
+    RecyclerView.Adapter adapt;
+    RecyclerView.LayoutManager manager;
     TextView noUsuarios;
     EditText buscarUsuarios;
-    int idUsuario,idUsuario2;
-    String idRoles;
+    int idUsuario,idUsuario2,idUsuario3;
+    String idRoles, buscador="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_peticion_amigos);
-        listViewUsuarios=(ListView)findViewById(R.id.peticiones);
+        recyclerViewUsuarios=(RecyclerView) findViewById(R.id.peticiones);
+
+        manager = new LinearLayoutManager(this);
+        recyclerViewUsuarios.setLayoutManager(manager);
+
         buscarUsuarios=(EditText) findViewById(R.id.editBuscar);
         noUsuarios=(TextView)findViewById(R.id.noUsuarios);
 
@@ -83,24 +95,22 @@ public class PeticionAmigos extends AppCompatActivity {
                             for (int i = 0; i <jsonArray.length() ; i++) {
                                 JSONObject object = jsonArray.getJSONObject(i);
                                 //Recogemos loe nombres:
-                                String finalstring = object.getString("nombre");
-                                listUsuarios.add(finalstring);
+                                String nombre = object.getString("nombre");
+                                idUsuario2 = object.getInt("idUsuario");
+                                listUsuarios.add(new ClaseBuscarUsuarios(R.drawable.ic_uno,nombre,idUsuario2));
                             }
-                            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(PeticionAmigos.this, android.R.layout.simple_spinner_item, listUsuarios);
-                            listViewUsuarios.setAdapter(adapter);
-                            listViewUsuarios.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            adapt= new AdaptadorPeticiones(getApplicationContext(),listUsuarios);
+
+                            recyclerViewUsuarios.setAdapter(adapt);
+
+                            ((AdaptadorPeticiones)adapt).setOnItemClickListener(new View.OnClickListener() {
                                 @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    try{
-                                        //Pasamoes Recogemos el idUsuario2 para hacer la peticion:
-                                        idUsuario2 = Integer.parseInt(jsonArray.getJSONObject(position).getString("idUsuario"));
-                                        Toast.makeText(PeticionAmigos.this, "Pulsado: "+idUsuario2, Toast.LENGTH_SHORT).show();
-                                       // peticionAmigos("http://192.168.1.131/ProyectoNuevo/AgendaCompartida/peticion.php?");
-                                    }catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
+                                public void onClick(View v) {
+                                    idUsuario3= listUsuarios.get(recyclerViewUsuarios.getChildLayoutPosition(v)).getIdUsuario2();
+                                    peticionAmigos("http://192.168.1.131/ProyectoNuevo/AgendaCompartida/peticion.php?");
                                 }
                             });
+
                             //Un buscador por si hay muchos usuarios que sea mas facil encontrar a nuestro amigo:
                             buscarUsuarios.addTextChangedListener(new TextWatcher() {
                                 @Override
@@ -110,14 +120,16 @@ public class PeticionAmigos extends AppCompatActivity {
 
                                 @Override
                                 public void onTextChanged( CharSequence s, int start, int before, int count) {
-                                    adapter.getFilter().filter(s);
+
                                 }
 
                                 @Override
                                 public void afterTextChanged(final Editable s) {
+                                    filter(s.toString(),(AdaptadorPeticiones)adapt);
 
                                 }
                             });
+
 
                         //Si no hubiera ningún usuario:
                         }else if (booleano == 0 && respuesta.equals("0")){
@@ -201,7 +213,7 @@ public class PeticionAmigos extends AppCompatActivity {
             protected Map<String, String> getParams() throws AuthFailureError {
                 //Mandamos al PHP los dos usuarios y hacemos petición:
                 Map<String,String> parametros = new HashMap<String, String>();
-                parametros.put("idUsuario2", String.valueOf(idUsuario2));
+                parametros.put("idUsuario2", String.valueOf(idUsuario3));
                 parametros.put("idUsuario", String.valueOf(idUsuario));
                 //Despues retornamos toda la colección de datos mediante la instancia creada:
                 return parametros;
@@ -210,6 +222,18 @@ public class PeticionAmigos extends AppCompatActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest2);
     }
+
+    private void filter(String text, AdaptadorPeticiones adapt){
+        ArrayList<ClaseBuscarUsuarios> filteredList = new ArrayList<>();
+        for (ClaseBuscarUsuarios item : listUsuarios){
+            if (item.getNombreUsuarios().toLowerCase().contains(text.toLowerCase())){
+                filteredList.add(item);
+            }
+        }
+       adapt.filterList(filteredList);
+    }
+
+
     //Volver atras:
     public void volverListAmigos2(View view){
         if (idRoles.equals("1")){

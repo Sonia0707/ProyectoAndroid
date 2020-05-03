@@ -2,6 +2,9 @@ package com.example.proyectofinal.agendaPersonal.agendaGrupal;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,16 +40,18 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Lista_Grupos extends AppCompatActivity {
 
-    ListView idListaGrupos;
-
+    RecyclerView recycler;
+    RecyclerView.Adapter adapter;
+    RecyclerView.LayoutManager manager;
     TextView noGrupos;
-    ArrayList<String> listGrupos= new ArrayList<>();
-    int idUsuario, idGrupal;
-    String nombreG, idRoles;
+    List<ClaseListaGrupos> listGrupos= new ArrayList<>();
+    int idUsuario, idGrupal,idUsuarioAdmin;
+    String nombreG, idRoles, fecha, nombre;
 
     /*Faltan los 2 botones...*/
 
@@ -54,7 +59,14 @@ public class Lista_Grupos extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista__grupos);
-        idListaGrupos=(ListView)findViewById(R.id.idListaGrupos);
+        recycler=(RecyclerView) findViewById(R.id.idListaGrupos);
+        manager = new LinearLayoutManager(this);
+        recycler.setLayoutManager(manager);
+
+        //RecyclerView.ItemDecoration divider = new DividerItemDecoration(this,DividerItemDecoration.VERTICAL);
+       // recycler.addItemDecoration(divider);
+
+
         noGrupos=(TextView)findViewById(R.id.noGrupos);
 
         //Sharpreferens idUsuario:
@@ -65,10 +77,12 @@ public class Lista_Grupos extends AppCompatActivity {
         SharedPreferences preferences2 = getSharedPreferences("idRoles", Context.MODE_PRIVATE);
         idRoles=preferences2.getString("idRoles","");
 
-        UrlAmigos("http://192.168.1.131/ProyectoNuevo/AgendaGrupal/listaGrupos.php");
+
+
+        ListaGrupos("http://192.168.1.131/ProyectoNuevo/AgendaGrupal/listaGrupos.php");
 
     }
-    public void UrlAmigos(String URL){
+    public void ListaGrupos(String URL){
         StringRequest stringRequest2 = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -88,28 +102,31 @@ public class Lista_Grupos extends AppCompatActivity {
                             for (int i = 0; i <jsonArray.length() ; i++) {
                                 //Sacamos el nombre  del Grupo, la fecha de creación y el nombre del Administtrador:
                                 JSONObject object = jsonArray.getJSONObject(i);
-                                String finalstring = object.getString("nombreG")+"->"+object.getString("fecha")+"->"+object.getString("nombreAdmin");
-                                listGrupos.add(finalstring);
+                                idGrupal = object.getInt("idGrupal");
+                                idUsuarioAdmin = object.getInt("idAdmind");
+                                nombreG = object.getString("nombreG");
+                                fecha = object.getString("fecha");
+                                nombre = object.getString("nombreAdmin");
+                                listGrupos.add(new ClaseListaGrupos(R.drawable.ic_group_add_black_24dp,idUsuarioAdmin,idGrupal,nombreG,nombre,fecha));
                             }
-                            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(Lista_Grupos.this, android.R.layout.simple_spinner_item, listGrupos);
-                            idListaGrupos.setAdapter(adapter);
-                            idListaGrupos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            adapter = new AdaptadorGrupos(getApplicationContext(),listGrupos);
+
+                            recycler.setAdapter(adapter);
+
+                            ((AdaptadorGrupos)adapter).setOnItemClickListener(new View.OnClickListener() {
                                 @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    try{
-                                        //Recogemos el idGrupal y se lo pasamos a tareas grupales:
-                                        idGrupal = Integer.parseInt(jsonArray.getJSONObject(position).getString("idGrupal"));
-                                        Toast.makeText(Lista_Grupos.this, "Pulsado: "+idGrupal, Toast.LENGTH_SHORT).show();
+                                public void onClick(View v) {
 
-                                        Intent intent = new Intent(Lista_Grupos.this, Lista_Tareas_Grupal.class);
-                                        intent.putExtra("idGrupal",idGrupal);
-                                        startActivity(intent);
+                                    guardarAdmin(idUsuarioAdmin);
 
-                                    }catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
+                                    Intent intent = new Intent(Lista_Grupos.this, Lista_Tareas_Grupal.class);
+                                    intent.putExtra("idGrupal",listGrupos.get(recycler.getChildAdapterPosition(v)).getIdGrupalG());
+                                    startActivity(intent);
+
                                 }
                             });
+
+
                         }else if (booleano == 0 && respuesta.equals("0")){
                             noGrupos.setText("No tienes grupos ni perteneces a ninguno, crea alguno");
                         }
@@ -225,6 +242,13 @@ public class Lista_Grupos extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
+    }
+    //Guardemos datos de admistrador de Grupos para futuras cosas:
+    public   void guardarAdmin(int idUsuarioAdmin){
+        SharedPreferences preferences = getSharedPreferences("AdministradorGrupo", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("idUsuarioAdmind",idUsuarioAdmin);
+        editor.commit();
     }
     public void atras(View view){
         if (idRoles.equals("1")){

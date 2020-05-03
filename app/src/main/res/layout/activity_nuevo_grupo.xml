@@ -5,34 +5,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#d8ecea"
+    android:background="@color/backgroundcolor"
     tools:context=".agendaPersonal.agendaGrupal.NuevoGrupo">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:background="#009688"
-        android:orientation="horizontal">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
+            android:layout_weight="0.5"
+
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="Nueva Grupo"
-                android:textColor="#FFFFFF"
-                android:textSize="25sp" />
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Nueva Grupo"
+                    android:textColor="#000"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -75,16 +89,18 @@
             <TextView
                 android:id="@+id/noAmigosGrupo"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="51dp"
+                android:layout_marginBottom="20sp"
                 android:layout_weight="0.5"
                 android:textColor="@color/design_default_color_on_secondary"
                 android:textColorHint="@color/design_default_color_on_secondary"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <ListView
                 android:id="@+id/idAmigosGrupo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_margin="20sp"
                 android:layout_weight="5" />
 
         </LinearLayout>
@@ -114,8 +130,9 @@
                     android:elevation="5dp"
                     android:onClick="guardar"
                     android:text="Guardar"
-                    android:textColor="#fff"
-                    android:textSize="16sp" />
+                    android:textColor="#000"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
@@ -137,8 +154,9 @@
 
                     android:onClick="cancelar"
                     android:text="Cancelar"
-                    android:textColor="#fff"
-                    android:textSize="16sp" />
+                    android:textColor="#000"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

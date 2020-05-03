@@ -1,16 +1,17 @@
 package com.example.proyectofinal.agendaPersonal.agendaCompartida;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,22 +29,33 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Lista_tareas extends AppCompatActivity {
     //Crear varibles para visualizar y las que necesitemos:
-    ListView idFechasTitulo;
+    RecyclerView idFechasTitulo;
+    RecyclerView.Adapter adapter2;
+    RecyclerView.LayoutManager manager;
     String fecha,titulo,descrip,hora,nombre;
     TextView textoFechas;
-    ArrayList<String> listFechasTitulo= new ArrayList<>();
+    List<TareasComp> tareasComp= new ArrayList<>();
     int idUsuario,idUsuario2, idComp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_tareas);
-        idFechasTitulo=(ListView)findViewById(R.id.idFechasTitulo);
+        idFechasTitulo=(RecyclerView) findViewById(R.id.idFechasTitulo);
+        manager = new LinearLayoutManager(this);
+        idFechasTitulo.setLayoutManager(manager);
+
+        RecyclerView.ItemDecoration divider = new DividerItemDecoration(this,DividerItemDecoration.VERTICAL);
+        idFechasTitulo.addItemDecoration(divider);
+
+
         textoFechas=(TextView)findViewById(R.id.textoFechas);
 
         //Sharpreferens idUsuario:
@@ -74,43 +86,39 @@ public class Lista_tareas extends AppCompatActivity {
                             textoFechas.setText("Lista de Tareas:");
                             final JSONArray jsonArray = new JSONArray(respuesta);
                             //Metemos los resultados en una Arraylist que luego introduciremos en la Listview con un Array adapter:
-                            int cont=0;
+
                             for (int i = 0; i <jsonArray.length() ; i++) {
-                                cont++;
+
                                 JSONObject object = jsonArray.getJSONObject(i);
                                 //Sacamos todo el contenido pero para esta vista solo mostrasmos el titulo de la tarea y la fecha:
-                                String finalstring = cont+"."+object.getString("titulo")+" -> "+object.getString("fecha");
-                                listFechasTitulo.add(finalstring);
+
+                                idUsuario2 = object.getInt("idUsuario");
+                                idComp = object.getInt("idComp");
+                                fecha = object.getString("fecha");
+                                titulo = object.getString("titulo");
+                                descrip = object.getString("descrip");
+                                nombre = object.getString("nombre");
+                                hora = object.getString("hora");
+                                tareasComp.add(new TareasComp(R.drawable.ic_launcher_icon_tareas_foreground, idComp, titulo, hora, fecha, descrip, nombre,idUsuario2));
                             }
+                            adapter2 = new AdaptadorComp(Lista_tareas.this,tareasComp);
+                            idFechasTitulo.setAdapter(adapter2);
 
-                            final ArrayAdapter<String> adapter = new ArrayAdapter<String>(Lista_tareas.this, android.R.layout.simple_spinner_item, listFechasTitulo);
-                            idFechasTitulo.setAdapter(adapter);
-                            idFechasTitulo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                           moverItems2(idFechasTitulo,tareasComp);
+
+                            ((AdaptadorComp)adapter2).setOnItemClickListener(new View.OnClickListener() {
                                 @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    try{//El contenido siguiente lo guardamos para mandarselo a la siguiente vista donde veremos
-                                        //la tarea clicada al pasarle el idComp unico:
-                                        idUsuario2 = Integer.parseInt(jsonArray.getJSONObject(position).getString("idUsuario"));
-                                        idComp = Integer.parseInt(jsonArray.getJSONObject(position).getString("idComp"));
-                                        fecha = jsonArray.getJSONObject(position).getString("fecha");
-                                        titulo = jsonArray.getJSONObject(position).getString("titulo");
-                                        descrip = jsonArray.getJSONObject(position).getString("descrip");
-                                        hora = jsonArray.getJSONObject(position).getString("hora");
-                                        nombre = jsonArray.getJSONObject(position).getString("nombre");
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(Lista_tareas.this, TareaCompartida.class);
+                                    intent.putExtra("idComp",tareasComp.get(idFechasTitulo.getChildAdapterPosition(v)).getIdComp());
+                                    intent.putExtra("idUsuario2",tareasComp.get(idFechasTitulo.getChildAdapterPosition(v)).getIdUsuario2());
+                                    intent.putExtra("titulo",tareasComp.get(idFechasTitulo.getChildAdapterPosition(v)).getTitulo());
+                                    intent.putExtra("descrip",tareasComp.get(idFechasTitulo.getChildAdapterPosition(v)).getDescrip());
+                                    intent.putExtra("hora",tareasComp.get(idFechasTitulo.getChildAdapterPosition(v)).getHoraComp());
+                                    intent.putExtra("fecha", tareasComp.get(idFechasTitulo.getChildAdapterPosition(v)).getFechTareas());
+                                    intent.putExtra("nombre", tareasComp.get(idFechasTitulo.getChildAdapterPosition(v)).getNombPersona());
+                                    startActivity(intent);
 
-                                        //Paso de todos los Datos a la siguiente Activity:
-                                        Intent intent = new Intent(Lista_tareas.this, TareaCompartida.class);
-                                        intent.putExtra("idUsuario2",idUsuario2);
-                                        intent.putExtra("idComp",idComp);
-                                        intent.putExtra("fecha",fecha);
-                                        intent.putExtra("titulo",titulo);
-                                        intent.putExtra("descrip",descrip);
-                                        intent.putExtra("hora",hora);
-                                        intent.putExtra("nombre",nombre);
-                                        startActivity(intent);
-                                    }catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
                                 }
                             });
                         }else if (booleano == 0 && respuesta.equals("0")){
@@ -153,6 +161,29 @@ public class Lista_tareas extends AppCompatActivity {
         Intent intent = new Intent(Lista_tareas.this, ListaAmigosTareas.class);
         intent.putExtra("idUsuario2",idUsuario2);
         startActivity(intent);
+    }
+    public void moverItems2 (RecyclerView recyclerView, final List list){
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,0) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder dragged, @NonNull RecyclerView.ViewHolder target) {
+
+                int position_dragged = dragged.getAdapterPosition();
+                int position_target = target.getAdapterPosition();
+
+                Collections.swap(list,position_dragged,position_target);
+
+                adapter2.notifyItemMoved(position_dragged,position_target);
+
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        });
+        helper.attachToRecyclerView(recyclerView);
+
     }
 
 }

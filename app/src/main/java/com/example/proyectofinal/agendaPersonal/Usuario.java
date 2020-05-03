@@ -1,57 +1,93 @@
 package com.example.proyectofinal.agendaPersonal;
+
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.cardview.widget.CardView;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.proyectofinal.R;
 import com.example.proyectofinal.agendaPersonal.agendaCompartida.ListaAmigosTareas;
 import com.example.proyectofinal.agendaPersonal.agendaCompartida.PeticionAmigos;
 import com.example.proyectofinal.agendaPersonal.agendaCompartida.VerPetiones;
 import com.example.proyectofinal.agendaPersonal.agendaGrupal.Lista_Grupos;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 
 public class Usuario extends AppCompatActivity implements View.OnClickListener {
     //Crear varibles para visualizar y las que necesitemos:
-    ImageView btnPersonal;
-    ImageView btnCompartida;
-    ImageView btnGrupal;
-    ImageView principal;
+    CardView btnPersonal;
+    CardView btnCompartida;
+    CardView btnGrupal;
     Button btnCerrar;
-    FloatingActionButton btnVerPeticionUsuario,btnBuscarAmigosUsuario;
     int idUsuario;
 
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_usuario);
-        btnPersonal= (ImageView) findViewById(R.id.btnPersonal);
-        btnCompartida= (ImageView) findViewById(R.id.btnCompartida);
-        btnGrupal= (ImageView) findViewById(R.id.btnGrupal);
-        btnVerPeticionUsuario= (FloatingActionButton) findViewById(R.id.buscarPeticiones);
-        btnBuscarAmigosUsuario= (FloatingActionButton) findViewById(R.id.buscarAmigos);
+        setContentView(R.layout.principal);
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+
+        btnPersonal= (CardView) findViewById(R.id.btnPersonal);
+        btnCompartida= (CardView) findViewById(R.id.btnCompartida);
+        btnGrupal= (CardView) findViewById(R.id.btnGrupal);
         btnCerrar= (Button)findViewById(R.id.btnCerrar2);
-        principal=(ImageView)findViewById(R.id.principal);
+
 
         //Crear el escuchador al clicar:
-        principal.setOnClickListener(this);
+
         btnPersonal.setOnClickListener(this);
         btnCompartida.setOnClickListener(this);
         btnGrupal.setOnClickListener(this);
         btnCerrar.setOnClickListener(this);
-        btnVerPeticionUsuario.setOnClickListener(this);
-        btnBuscarAmigosUsuario.setOnClickListener(this);
+
 
         //Sharpreferens idUsuario: Recuperar usuario logueado:
         SharedPreferences preferences = getSharedPreferences("LoginUsuario", Context.MODE_PRIVATE);
         idUsuario = preferences.getInt("idUsuario", 0);
 
     }
+    //Metodo para mostrar menu oculto:
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+
+        if (id == R.id.item1){
+
+            //Buscar amigos para mandar peticiones
+            startActivity(new Intent(this, PeticionAmigos.class));
+            finish();
+        }else if (id == R.id.item2){
+
+            //Ver si tenemos peticiones:
+            startActivity(new Intent(this, VerPetiones.class));
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -59,37 +95,25 @@ public class Usuario extends AppCompatActivity implements View.OnClickListener {
                 //Mandar a tareas peronales
                 startActivity(new Intent(this, TareasPersonales.class));
                 finish();
-
                 break;
+
             case R.id.btnCompartida:
                 //Mandar a tareas compartidas
                 startActivity(new Intent(this, ListaAmigosTareas.class));
                 finish();
                 break;
+
             case R.id.btnGrupal:
                 //Mandar a tareas Grupales
                 startActivity(new Intent(this, Lista_Grupos.class));
                 break;
+
             case R.id.btnCerrar2:
                 //Cerrar la sesion:
                 startActivity(new Intent(this, Login_Main.class));
                 finish();
                 break;
-            case R.id.buscarAmigos:
-                //Buscar amigos para mandar peticiones
-                startActivity(new Intent(this, PeticionAmigos.class));
-                finish();
-                break;
-            case R.id.buscarPeticiones:
-                //Ver si tenemos peticiones:
-                startActivity(new Intent(this, VerPetiones.class));
-                finish();
-                break;
-            case R.id.principal:
-                //Volver al Login
-                startActivity(new Intent(this, Login_Main.class));
-                finish();
-                break;
+
         }
     }
 
